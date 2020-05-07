@@ -1,0 +1,5 @@
+html5lib
+parser  # for reverse formatting
+bs4
+requests
+colorama  # colorful output on windows
