@@ -38,11 +38,14 @@ Loggers can be access via `self.logger`
 #### 3 Functions must be changed `generate_urls`, `process_page`,  `are_requirements_satisfied`
 
 #### Function: `generate_urls`
+Arguments: None
+Generates a list of url to scrape.
+Returns List[Tuple[str, str]]  -- Tuple[str, str]. First string is the actual url to scrape, second string is the page associated with the url
 
 #### Function: `process_page`
 Arguments: url {string} -- the url to the page that need it's image data to be extracted
 This function should provide the caller a list of dictionaries that contains the `image data` for all images that is present on the page.
-
+Returns {dict} -- `image data` to assist image downloading and verify requirements in `are_requirements_satisfied`. see section: ### DATA STRUCTURE FOR IMAGE DATA for more info on image data
 
 #### Function: `are_requirements_satisfied`
 Arguments: img_data {dict} -- the dictionary contains `image data`
