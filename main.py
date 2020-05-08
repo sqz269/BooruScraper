@@ -1,4 +1,4 @@
-from Scraper.framework._framework import init_scraper_base
+from Scraper.framework.framework import init_scraper_base
 
 from Scraper import AVAILABLE_MODULES
 

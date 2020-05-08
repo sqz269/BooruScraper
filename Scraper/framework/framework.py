@@ -1,15 +1,13 @@
 import os
 import time
-import traceback
 from concurrent.futures.thread import ThreadPoolExecutor
-from typing import BinaryIO, List, Tuple, Type
+from typing import BinaryIO, List, Tuple
 
-from Scraper.framework._base_component import BaseComponent
-from Scraper.framework._components_basic import ComponentBasic
+from Scraper.framework.components_basic import ComponentBasic
 
 
 def init_scraper_base(SuperClass: ComponentBasic, *args, **kwargs):
-    """Initializes a class instance of ScraperBase with SuperClass (paramater) as it's superclass
+    """Initializes a class instance of ScraperBase with SuperClass (parameter) as it's superclass
 
     Arguments:
         SuperClass {ComponentBasic} -- The super class ScraperBase will be inheriting from, should be a child class of ComponentBasic
@@ -18,18 +16,17 @@ def init_scraper_base(SuperClass: ComponentBasic, *args, **kwargs):
     Returns:
         ScraperBase -- An initalized instance of ScraperBase that is inheriting SuperClass (param)
     """
-    print(f"[*] Injected class: {SuperClass.__name__}. With SuperClass: {SuperClass.__bases__}")
-    assert ComponentBasic in SuperClass.__base__, f"Class {type(SuperClass).__name__} has to be a sub class of ComponentBasic at Scraper.framework._components_basic"
+    print(f"[*] Using class: {SuperClass.__name__}. With SuperClass: {SuperClass.__bases__}")
+
+    # assert ComponentBasic in SuperClass.__base__, f"Class {type(SuperClass).__name__} has to be a sub class of ComponentBasic at Scraper.framework._components_basic"
     class ScraperBase(SuperClass):
 
-
         def __init__(self, *args, **kwargs):
-            self.master_directory: str      = None
-            self.directory_created: list    = []
-            self.csv_io: BinaryIO           = None
+            self.master_directory: str = None
+            self.directory_created: list = []
+            self.csv_io: BinaryIO = None
 
             super().__init__(*args, **kwargs)
-
 
         def run(self, urls: List[Tuple[str, int]]):
             """executes the scraper
@@ -48,14 +45,15 @@ def init_scraper_base(SuperClass: ComponentBasic, *args, **kwargs):
             if (self.config["max_concurrent_thread"] > 5):
                 self.logger.warning("Max conccurent thread exceeds 5, some server might issue temp ban on your ip")
 
-            with ThreadPoolExecutor(max_workers=self.config["max_concurrent_thread"], thread_name_prefix=self.config["thread_name_prefix"]) as executor:
+            with ThreadPoolExecutor(max_workers=self.config["max_concurrent_thread"],
+                                    thread_name_prefix=self.config["thread_name_prefix"]) as executor:
                 for url in urls:
                     self.logger.debug(f"Queuing url: {url[0]} for processing")
                     executor.submit(self._start, url).result()
-                self.logger.info(f"Queued {len(urls)} urls for processing, with {self.config['max_concurrent_thread']} available workers")
+                self.logger.info(
+                    f"Queued {len(urls)} urls for processing, with {self.config['max_concurrent_thread']} available workers")
 
             self.clean_up()
-
 
         def _start(self, target: Tuple[str, int]):
             """Actually starts scraping
@@ -99,7 +97,6 @@ def init_scraper_base(SuperClass: ComponentBasic, *args, **kwargs):
                 self.logger.exception(f"Unexpected exception occurred. Thread Will Exit.")
                 return
 
-
         def _download_image(self, img_url: str, img_data: dict, path: str, img_index: int):
             """Wrapper for Utils.download_image (self.download_image)
 
@@ -128,7 +125,6 @@ def init_scraper_base(SuperClass: ComponentBasic, *args, **kwargs):
 
             return self.download(img_url, file_path, header, self.request_cookie)
 
-
         def write_csv_entry(self, data: dict):
             self.csv_io.write(self.config["csv_entry_string"].format(**data).encode("utf-8"))
             self.csv_io.write("\n".encode("utf-8"))
@@ -136,27 +132,25 @@ def init_scraper_base(SuperClass: ComponentBasic, *args, **kwargs):
                 self.csv_io.flush()
                 os.fsync(self.csv_io.fileno())
 
-
         def initialize_file_and_directory(self):
             """Initializes IO for CSV files and create folders to store scraped data
 
                 Creates Master directory, opens CSV File for writing
             """
-            master_directory_name   = self.config["master_directory_name_string"].format(**self.config.get_config_dict())
-            self.master_directory   = os.path.abspath(os.path.join(self.config["save_path"], master_directory_name))
+            master_directory_name = self.config["master_directory_name_string"].format(**self.config.get_config_dict())
+            self.master_directory = os.path.abspath(os.path.join(self.config["save_path"], master_directory_name))
             os.makedirs(self.master_directory, exist_ok=True)
             self.logger.info(f"Created master directory at: {self.master_directory}")
 
-            csv_path                = os.path.abspath(os.path.join(self.master_directory, "data.csv"))
-            self.csv_io             = open(csv_path, "wb")
+            csv_path = os.path.abspath(os.path.join(self.master_directory, "data.csv"))
+            self.csv_io = open(csv_path, "wb")
 
             self.logger.info(f"Created CSV file for collected image at: {csv_path}")
 
             # Write the headers of the CSV
-            csv_header              = self.config["csv_entry_string"].replace("{", "").replace("}", "")
-            self.logger.debug("Writting CSV header")
+            csv_header = self.config["csv_entry_string"].replace("{", "").replace("}", "")
+            self.logger.debug("Writing CSV header")
             self.csv_io.write(csv_header.encode("utf-8"))
-
 
         def clean_up(self):
             self.csv_io.close()
@@ -166,6 +160,5 @@ def init_scraper_base(SuperClass: ComponentBasic, *args, **kwargs):
                 os.mkdir(dir_merge)
                 for directory in self.directory_created:
                     self.merge_dirs(directory, dir_merge, keep_separate=self.config["merge_file_keep_separate"])
-
 
     return ScraperBase(*args, **kwargs)

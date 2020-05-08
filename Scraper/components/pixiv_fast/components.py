@@ -7,7 +7,7 @@ import requests
 from dateutil.parser import parse as time_parse
 from pixivpy3.aapi import AppPixivAPI
 
-from Scraper.framework._components_basic import ComponentBasic
+from Scraper.framework.components_basic import ComponentBasic
 
 
 class ComponentPixivFast(ComponentBasic):
@@ -20,10 +20,8 @@ class ComponentPixivFast(ComponentBasic):
         self.pixiv_api = AppPixivAPI()
         self.pixiv_api.login(self.config["username"], self.config["password"])
 
-
     def generate_urls(self):
         return [(i * 30, i) for i in range(self.config["start_page"] - 1, self.config["end_page"] + 1)]
-
 
     def process_page(self, url):
         data = self.pixiv_api.search_illust(
@@ -34,7 +32,6 @@ class ComponentPixivFast(ComponentBasic):
             offset=url
         )
         return self._restructure_image_data(data)
-
 
     def are_requirements_satisfied(self, img_data: dict):
         # Check of extra tag requirements
@@ -53,7 +50,8 @@ class ComponentPixivFast(ComponentBasic):
             return False
 
         if not (self.calculate_avg_bookmark_per_day(img_data) >= self.config["avg_bookmark_per_day"]):
-            self.logger.debug(f"Filter out {img_data['id']} due to insufficient avg bookmark perday: {int(self.calculate_avg_bookmark_per_day(img_data))}")
+            self.logger.debug(
+                f"Filter out {img_data['id']} due to insufficient avg bookmark perday: {int(self.calculate_avg_bookmark_per_day(img_data))}")
             return False
 
         if not (img_data["total_view"] >= self.config["view_min"]):
@@ -62,18 +60,20 @@ class ComponentPixivFast(ComponentBasic):
 
         # Check if the bookmark count matches requirements
         if not (img_data["total_bookmarks"] >= self.config["bookmark_min"]):
-            self.logger.debug(f"Filter out {img_data['id']} due to insufficient bookmarks: {img_data['total_bookmarks']}")
+            self.logger.debug(
+                f"Filter out {img_data['id']} due to insufficient bookmarks: {img_data['total_bookmarks']}")
             return False
 
         if not (int(img_data["total_view"] / img_data["total_bookmarks"]) <= self.config["view_bookmark_ratio"]):
             if (img_data["total_bookmarks"] >= self.config["view_bookmark_ratio_bypass"]):
-                self.logger.debug(f"Did not filter out {img_data['id']} even it's view/bookmark ratio did not meet requirement because it's total book mark {img_data['total_bookmarks']} triggered bypass")
+                self.logger.debug(
+                    f"Did not filter out {img_data['id']} even it's view/bookmark ratio did not meet requirement because it's total book mark {img_data['total_bookmarks']} triggered bypass")
             else:
-                self.logger.debug(f"Filter out {img_data['id']} due to insufficient view/bookmark ratio: {int(img_data['total_view'] / img_data['total_bookmarks'])}")
+                self.logger.debug(
+                    f"Filter out {img_data['id']} due to insufficient view/bookmark ratio: {int(img_data['total_view'] / img_data['total_bookmarks'])}")
                 return False
 
         return True
-
 
     def _restructure_image_data(self, org_data: list):
         data = []
@@ -102,7 +102,8 @@ class ComponentPixivFast(ComponentBasic):
             try:
                 if (submission["meta_single_page"]):
                     submission_data.update({"image_links": [submission["meta_single_page"]["original_image_url"]]})
-            except KeyError: pass
+            except KeyError:
+                pass
 
             try:
                 submission_data["image_links"]
@@ -121,11 +122,11 @@ class ComponentPixivFast(ComponentBasic):
             data.append(submission_data)
         return data
 
-
     @staticmethod
     def _calculate_avg_bookmark_per_day(created_date: str, total_bookmark: int):
         current_JST_time = time.time() + 32400  # 32400 is 9 hours which is the JST offset from CST (Central Daylight Time), That is assuming you are in CST
         upload_time = time_parse(created_date).timestamp()  # parse the ISO-8601 Formmatted string to Epoch
-        days_passed = (current_JST_time - upload_time) / 86400  # divide the difference between current time and upload time by a day
+        days_passed = (
+                                  current_JST_time - upload_time) / 86400  # divide the difference between current time and upload time by a day
         bookmark_per_day = total_bookmark / days_passed
         return bookmark_per_day
