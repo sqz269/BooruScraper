@@ -75,7 +75,7 @@ Then simply call `super.__init__(<ConfigFileName>)` to load the configuration
 
 #### List of Required fields
 ##### The keys in the ini file must be exact match in-order to work
-##### An .ini file with pre-existing fields available at Scraper/framework/basic_config.ini
+##### An .ini file with pre-existing fields available at docs directory
 - SAVE_PATH {string(path-like)} --
 - FILENAME_STRING {string(formatted)} --
 - CSV_ENTRY_STRING {string(formatted)} --
