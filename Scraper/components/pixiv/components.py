@@ -3,47 +3,67 @@ import operator
 import time
 
 import requests
+from bs4 import BeautifulSoup
 from dateutil.parser import parse as time_parse
 from pixivpy3.aapi import AppPixivAPI
 
 from Scraper.framework.components_basic import ComponentBasic
 
+IMAGE_DATA_FIELD_TO_JSON_DATA_FIELD = {
+    "image_id": "id",
+
+    "image_title":          "title",
+    "image_type":           "illustType",
+    "image_date":           "create_date",
+    "image_uploader_id":    "userId",
+    "image_uploader_name":  "userName",
+    "image_width":          "width",
+    "image_height":         "height",
+    "image_page_count":     "pageCount",
+    "image_bookmarks":      "bookmarkCount",
+    "image_views":          "viewCount",
+    "image_likes":          "likeCount",
+    "image_comments":       "commentCount",
+    "image_is_original":    "isOriginal"
+}
+
+IMAGE_DATA_FIELD_TO_CONFIGURATION = {
+
+}
 
 class ComponentPixiv(ComponentBasic):
-    base_url = ("""
+    api_endpoint = ("""
         https://www.pixiv.net/ajax/search/artworks/{f_tags}?word={f_tags}
-                                                        &order={sorted_by}
-                                                        &mode={rating}
-                                                        &scd={submission_after}
-                                                        &ecd={submission_before}
-                                                        &s_mode={search_mode}
-                                                        &type={submission_type}
-                                                        &wlt={width_min}
-                                                        &wgt={width_max}
-                                                        &hlt={height_min}
-                                                        &hgt={height_max}
-                                                        &ratio={orientation}
-                                                        &tool={tool}
-    """.replace(" ", "").replace("\n", ""))  # Remove space and new lines because triple quote string will include those
+                                                            &order={sorted_by}
+                                                            &mode={rating}
+                                                            &scd={submission_after}
+                                                            &ecd={submission_before}
+                                                            &s_mode={search_mode}
+                                                            &type={submission_type}
+                                                            &wlt={width_min}
+                                                            &wgt={width_max}
+                                                            &hlt={height_min}
+                                                            &hgt={height_max}
+                                                            &ratio={orientation}
+                                                            &tool={tool}
+        """.replace(" ", "").replace("\n", ""))  # Remove space and new lines because triple quote string will include those
 
-    # Also "&p={page}" is missing because it will not be formatted with user set configurations
+    artwork_view_url = "https://www.pixiv.net/artworks/{id}"
+
+    # "&p={page}" is missing because it will not be formatted with user set configurations
 
     def __init__(self, init_verbose=True):
         super().__init__("pixiv.ini", init_verbose=init_verbose)
 
         self.url_as_referer = True
-
-        self.pixiv_app_api = AppPixivAPI()  # This will help us to get details about a specific submission
-
         # self.download_cookie    = {"PHPSESSID": self.config["phpsessid"]}
         # User-Agent Header will auto configure
 
         self.logger.info("Logging in to Pixiv")
-        self.pixiv_app_api.login(self.config["username"], self.config["password"])
 
     def generate_urls(self):  # TODO: Make tags_exclude_query actually work
         f_tags = self.config["tags_query"] + self.config["tags_exclude_query"]
-        base_url_formatted = self.base_url.format(f_tags=f_tags, **self.config.get_configuration())
+        base_url_formatted = self.api_endpoint.format(f_tags=f_tags, **self.config.get_configuration())
         base_url_with_pg_number = base_url_formatted + "&p={page}"
         list_of_urls = [(base_url_with_pg_number.format(page=i), i) for i in
                         range(self.config["start_page"], (self.config["end_page"] + 1))]
@@ -121,9 +141,28 @@ class ComponentPixiv(ComponentBasic):
 
         return True
 
+    def retrive_extended_data(self, img_id: str):  # bypass rate limiting (hopefully will work)
+        r = requests.get(self.artwork_view_url.format(id=img_id))
+        if r.status_code >= 400:
+            self.logger.error(f"Error while getting artwork page. Status Code: {r.status_code}")
+            return;
+
+        bs = BeautifulSoup(r.content, "lxml")
+        artwork_details = bs.find("meta", attrs={"id": "meta-preload-data"})
+        artwork_details = json.loads(artwork_details.get("content"))
+        return self.restructure_extended_data(artwork_details)
+
+    def restructure_extended_data(self, data: dict):
+        data = data["illust"][data["illust"].keys()[0]]
+        image_data = {}
+        for k, v in IMAGE_DATA_FIELD_TO_JSON_DATA_FIELD.items():
+            image_data.update({k: data[v]})
+
+
+
     def are_requirements_satisfied(self, data: dict):
-        details = self.pixiv_app_api.illust_detail(data["id"])[
-            "illust"]  # get some extended infomation such as bookmark count and view count
+        # Very easy to hit rate limit
+        details = self.pixiv_app_api.illust_detail(data["id"])[ "illust"]  # get some extended infomation such as bookmark count and view count
 
         if not (self._calculate_avg_bookmark_per_day(details["create_date"], details["total_bookmarks"]) >=
                 self.config["avg_bookmark_per_day"]):
