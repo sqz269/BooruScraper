@@ -33,44 +33,44 @@ class ComponentPixivFast(ComponentBasic):
         )
         return self._restructure_image_data(data)
 
-    def are_requirements_satisfied(self, img_data: dict):
+    def are_requirements_satisfied(self, data: dict):
         # Check of extra tag requirements
-        for tag in img_data["tags"]:
+        for tag in data["tags"]:
             if tag in self.config["tags_bypass"]:
-                self.logger.debug(f"Accepted {img_data['id']} due to tag bypass: {tag}");
+                self.logger.debug(f"Accepted {data['id']} due to tag bypass: {tag}");
                 return True
 
             if tag in self.config["tags_exclude"]:
-                self.logger.debug(f"Accepted {img_data['id']} due to tag exclude: {tag}");
+                self.logger.debug(f"Accepted {data['id']} due to tag exclude: {tag}");
                 return False
 
         # Check if illust type requirements match
-        if self.config["illust_type"] and (img_data["type"] not in self.config["illust_type"]):
-            self.logger.debug(f"Filter out {img_data['id']} due to excluded illust type: {img_data['type']}")
+        if self.config["illust_type"] and (data["type"] not in self.config["illust_type"]):
+            self.logger.debug(f"Filter out {data['id']} due to excluded illust type: {data['type']}")
             return False
 
-        if not (self.calculate_avg_bookmark_per_day(img_data) >= self.config["avg_bookmark_per_day"]):
+        if not (self.calculate_avg_bookmark_per_day(data) >= self.config["avg_bookmark_per_day"]):
             self.logger.debug(
-                f"Filter out {img_data['id']} due to insufficient avg bookmark perday: {int(self.calculate_avg_bookmark_per_day(img_data))}")
+                f"Filter out {data['id']} due to insufficient avg bookmark perday: {int(self.calculate_avg_bookmark_per_day(data))}")
             return False
 
-        if not (img_data["total_view"] >= self.config["view_min"]):
-            self.logger.debug(f"Filter out {img_data['id']} due to insufficient view counts: {img_data['total_view']}")
+        if not (data["total_view"] >= self.config["view_min"]):
+            self.logger.debug(f"Filter out {data['id']} due to insufficient view counts: {data['total_view']}")
             return False
 
         # Check if the bookmark count matches requirements
-        if not (img_data["total_bookmarks"] >= self.config["bookmark_min"]):
+        if not (data["total_bookmarks"] >= self.config["bookmark_min"]):
             self.logger.debug(
-                f"Filter out {img_data['id']} due to insufficient bookmarks: {img_data['total_bookmarks']}")
+                f"Filter out {data['id']} due to insufficient bookmarks: {data['total_bookmarks']}")
             return False
 
-        if not (int(img_data["total_view"] / img_data["total_bookmarks"]) <= self.config["view_bookmark_ratio"]):
-            if (img_data["total_bookmarks"] >= self.config["view_bookmark_ratio_bypass"]):
+        if not (int(data["total_view"] / data["total_bookmarks"]) <= self.config["view_bookmark_ratio"]):
+            if (data["total_bookmarks"] >= self.config["view_bookmark_ratio_bypass"]):
                 self.logger.debug(
-                    f"Did not filter out {img_data['id']} even it's view/bookmark ratio did not meet requirement because it's total book mark {img_data['total_bookmarks']} triggered bypass")
+                    f"Did not filter out {data['id']} even it's view/bookmark ratio did not meet requirement because it's total book mark {data['total_bookmarks']} triggered bypass")
             else:
                 self.logger.debug(
-                    f"Filter out {img_data['id']} due to insufficient view/bookmark ratio: {int(img_data['total_view'] / img_data['total_bookmarks'])}")
+                    f"Filter out {data['id']} due to insufficient view/bookmark ratio: {int(data['total_view'] / data['total_bookmarks'])}")
                 return False
 
         return True
