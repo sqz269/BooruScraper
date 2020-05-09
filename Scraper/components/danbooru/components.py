@@ -1,4 +1,5 @@
 from Scraper.framework.components_basic import ComponentBasic
+from Scraper.framework.base_component import MatchMode
 from typing import Tuple, List, Union
 
 from bs4 import BeautifulSoup
@@ -6,20 +7,6 @@ from bs4.element import Tag
 import requests
 
 
-class MatchMode:
-    INCLUDE = 0  # Matches element in each list using == operator (sv == v)
-    EXCLUDE = 1
-    SUPER_INCLUDE = 10  # Matches element in each list using in operator (sv in v)
-    SUPER_EXCLUDE = 11
-
-    GREATER = 2
-    SMALLER = 3
-    EQUAL = 4
-
-    # VARY    = 5
-
-
-# Intresting Request: https://danbooru.donmai.us/posts/{PID}?variant=tooltip&preview=false
 class ComponentsDanbooru(ComponentBasic):
     base_url = "https://danbooru.donmai.us/posts?page={page}&tags={tag}"
     base_submission_url = "https://danbooru.donmai.us/posts/{id}"
@@ -121,115 +108,10 @@ class ComponentsDanbooru(ComponentBasic):
             img_data = {}
             for k, v in self.IMAGE_DATA_FIELD_TO_HTML_DATA_FIELD.items():
                 img_data.update({k: post.get(f"data-{v}")})
-            img_data.update({"image_links": [post.get("data-file-url")]})
+            img_data.update({"image_links": [post.get("data-file-url")]})  # image links need to be a list so it can't be automatically updated
             img_data.update({"image_parent_link": self.base_submission_url.format(id=img_data["image_id"])})
             image_data_all.append(img_data)
         return image_data_all
-
-    def automated_requirements_verification(self, data_to_config_dict: dict, data_dict: dict,
-                                            short_circut=False) -> list:
-        requirements_missed = []
-        for k, v in data_to_config_dict.items():
-            if not self._validate_requirement(self.config[k], *v, data=data_dict):
-                if short_circut: return [k]
-                requirements_missed.append(k)
-        return requirements_missed
-
-    def _validate_requirement(self, standard_value, value, v_type: Union[int, str, list, bool],
-                              mode: MatchMode, separater=",", data=None) -> bool:
-        """Validates a requirement (duh)
-
-        Arguments:
-            standard_value {<T>} -- the value being compared (left side of the comparison operand)
-            value {str} -- the key to access the value of the image_data that we are going to compare.
-            v_type {Union[int, str, list, bool]} -- the value's data type we are comparing
-            mode {MatchMode} -- how we are comparing this value
-
-        Keyword Arguments:
-            separater {str} -- the separater we using if we are compairing list but value is a string and need split (default: {","})
-            data {dict} -- Image data for accessing value (default: {None})
-
-        Returns:
-            bool -- is the value matches MatchMode requirements (comparison operand returns true, or value in/excludes the value in standard_value)
-        """
-        value = data[value]
-        if v_type == int:
-            value = int(value)
-            if mode == MatchMode.EXCLUDE or mode == MatchMode.INCLUDE:
-                self.logger.error(f"Unsupported matchmode of [EXCLUDE, INCLUDE] for type int")
-                return False
-
-            if mode == MatchMode.EQUAL:
-                return standard_value == value
-
-            if mode == MatchMode.GREATER:
-                return standard_value > value
-
-            if mode == MatchMode.SMALLER:
-                return standard_value < value
-
-        if v_type == str:
-            if mode == MatchMode.GREATER or mode == MatchMode.SMALLER:
-                self.logger.error(f"Unsupported matchmode of [GREATER, SMALLER] for type str")
-                return False
-
-            if mode == MatchMode.EQUAL:
-                return standard_value == value
-
-            if mode == MatchMode.INCLUDE:
-                return standard_value in value  # TODO: Reverse compairson or something like that
-
-            if mode == MatchMode.EXCLUDE:
-                return standard_value not in value
-
-        if v_type == bool:
-            if mode == MatchMode.GREATER or mode == MatchMode.SMALLER or mode == MatchMode.EXCLUDE or mode == MatchMode.INCLUDE:
-                self.logger.error(
-                    f"Unsupported matchmode of [GREATER, SMALLER, EXCLUDE, INCLUDE, VARY] for type bool. Only mode Equal is supported")
-                return False
-
-            if (standard_value == "" or
-                standard_value.lower() == "ignore" or
-                standard_value.lower() == "none"):
-                return True
-
-            return standard_value == value
-
-        if v_type == list:
-            if mode == MatchMode.GREATER or mode == MatchMode.SMALLER or mode == MatchMode.EQUAL:
-                self.logger.error(f"Unsupported matchmode of [GREATER, SMALLER, VARY, EQUAL] for type list")
-                return False
-
-            if isinstance(value, str):
-                value = value.split(separater)
-
-            if mode == MatchMode.SUPER_INCLUDE:
-                for elements in standard_value:
-                    for v_elements in value:
-                        if elements in v_elements: break
-                    else:
-                        return False
-                return True
-
-            if mode == MatchMode.SUPER_EXCLUDE:
-                for elements in standard_value:
-                    for v_elements in value:
-                        if elements in v_elements: return False
-                return True
-
-            if mode == MatchMode.INCLUDE:
-                for elements in standard_value:
-                    if not (elements in value): return False
-                return True
-
-            if mode == MatchMode.EXCLUDE:
-                for elements in standard_value:
-                    if (elements in value): return False
-                return True
-
-            # if mode == MATCH_MODE.EQUAL:
-
-        self.logger.warning(f"No Know Operation with type: {v_type}. Match Mode: {mode}")
 
     def are_requirements_satisfied(self, data: dict) -> bool:
         unsatisfied_fields = self.automated_requirements_verification(self.IMAGE_DATA_FIELD_TO_CONFIGURATION, data, False)
