@@ -59,7 +59,7 @@ class BaseComponent(Utils, metaclass=Singleton):
             list -- list of missing config fields, empty if no required fields are missing
         """
         required = self.CONFIG_REQUIRED_FIELDS.copy()
-        for key, value in self.config.configuration.items():
+        for key, _ in self.config.configuration.items():
             try:
                 required.remove(key)
             except ValueError:
