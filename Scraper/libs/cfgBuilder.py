@@ -120,8 +120,8 @@ class ConfigurationBuilder(object, metaclass=Singleton):
                 if item == ".config_directory" :
                     file_path = str(os.path.abspath(os.path.join(root, config_name)))
                     return self.parse_cfg_from_path(file_path)
-        else:
-            print("[-] Unable to parse config. No configuration directory found. please create a file with name \".config_directory\" in your configuration folder. At or below level of main.py")
+
+        print("[-] Unable to parse config. No configuration directory found. please create a file with name \".config_directory\" in your configuration folder. At or below level of main.py")
         return False
 
 
