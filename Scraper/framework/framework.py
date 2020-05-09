@@ -94,7 +94,7 @@ def init_scraper_base(SuperClass: ComponentBasic, *args, **kwargs):
                 self.logger.fatal("Ctrl+C Received. Terminating")
                 raise SystemExit(0)
             except ProcessLookupError:
-                self.logger.exception(f"Unexpected exception occurred. Thread Will Exit.")
+                self.logger.exception("Unexpected exception occurred. Thread Will Exit.")
                 return
 
         def _download_image(self, img_url: str, img_data: dict, path: str, img_index: int):
