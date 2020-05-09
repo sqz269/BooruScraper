@@ -214,7 +214,8 @@ class BaseComponent(Utils, metaclass=Singleton):
 
     @staticmethod
     def strict_type_check(var, t_type, v_name):
-        assert isinstance(var, t_type), f"Variable: {v_name}. Expected: {t_type}; Actual: {type(var)}"
+        if not isinstance(var, t_type):
+            raise AssertionError(f"Variable: {v_name}. Expected: {t_type}; Actual: {type(var)}")
 
     @staticmethod
     def entry_point(scraper_framework_base):

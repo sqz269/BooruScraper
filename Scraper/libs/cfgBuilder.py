@@ -58,7 +58,8 @@ class ConfigurationBuilder(object, metaclass=Singleton):
         base_format_string = "file<{encoding}><{separator}>: {path}"
         file_info: list = value.strip().split(":")
 
-        assert (len(file_info) == 2 and file_info[0][:4] == "file"), "value does not point to file"
+        if not (len(file_info) == 2 and file_info[0][:4] == "file"):
+            raise AssertionError("value does not point to file")
 
         encoding, separator, path = parse.parse(base_format_string, value).named.values()
 
