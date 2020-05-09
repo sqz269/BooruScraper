@@ -61,7 +61,7 @@ class ComponentsDanbooru(ComponentBasic):
 
     def __init__(self, *args, **kwargs):
         # See _base_component->BaseComponent's constructor for argument details
-        super().__init__("danbooru.ini", init_verbose=True)
+        super().__init__("danbooru.ini")
         self.config.cvt_str_list(["tags_extra", "tags_exclude_extra"])
 
     def generate_urls(self) -> List[Tuple[str, str]]:
