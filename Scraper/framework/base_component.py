@@ -6,6 +6,19 @@ from Scraper.libs.singleton import Singleton
 from logging import Logger
 
 
+class MatchMode:
+    INCLUDE = 0  # Matches element in each list using == operator (sv == v)
+    EXCLUDE = 1
+    SUPER_INCLUDE = 10  # Matches element in each list using in operator (sv in v)
+    SUPER_EXCLUDE = 11
+
+    GREATER = 2
+    SMALLER = 3
+    EQUAL = 4
+
+    # VARY    = 5
+
+
 class BaseComponent(Utils, metaclass=Singleton):
     CONFIG_REQUIRED_FIELDS = [
         "save_path", "filename_string", "csv_entry_string", "master_directory_name_string",
@@ -92,6 +105,111 @@ class BaseComponent(Utils, metaclass=Singleton):
         self.logger.warning("Function \"exit_handler(code)\" was not overridden")
         input("Press Enter to Exit")
         raise SystemExit(code)
+
+    def automated_requirements_verification(self, data_to_config_dict: dict, data_dict: dict,
+                                            short_circut=False) -> list:
+        requirements_missed = []
+        for k, v in data_to_config_dict.items():
+            if not self._validate_requirement(self.config[k], *v, data=data_dict):
+                if short_circut: return [k]
+                requirements_missed.append(k)
+        return requirements_missed
+
+    def _validate_requirement(self, standard_value, value, v_type: Union[int, str, list, bool],
+                              mode: MatchMode, separater=",", data=None) -> bool:
+        """Validates a requirement (duh)
+
+        Arguments:
+            standard_value {<T>} -- the value being compared (left side of the comparison operand)
+            value {str} -- the key to access the value of the image_data that we are going to compare.
+            v_type {Union[int, str, list, bool]} -- the value's data type we are comparing
+            mode {MatchMode} -- how we are comparing this value
+
+        Keyword Arguments:
+            separater {str} -- the separater we using if we are compairing list but value is a string and need split (default: {","})
+            data {dict} -- Image data for accessing value (default: {None})
+
+        Returns:
+            bool -- is the value matches MatchMode requirements (comparison operand returns true, or value in/excludes the value in standard_value)
+        """
+        value = data[value]
+        if v_type == int:
+            value = int(value)
+            if mode == MatchMode.EXCLUDE or mode == MatchMode.INCLUDE:
+                self.logger.error(f"Unsupported matchmode of [EXCLUDE, INCLUDE] for type int")
+                return False
+
+            if mode == MatchMode.EQUAL:
+                return standard_value == value
+
+            if mode == MatchMode.GREATER:
+                return standard_value > value
+
+            if mode == MatchMode.SMALLER:
+                return standard_value < value
+
+        if v_type == str:
+            if mode == MatchMode.GREATER or mode == MatchMode.SMALLER:
+                self.logger.error(f"Unsupported matchmode of [GREATER, SMALLER] for type str")
+                return False
+
+            if mode == MatchMode.EQUAL:
+                return standard_value == value
+
+            if mode == MatchMode.INCLUDE:
+                return standard_value in value  # TODO: Reverse compairson or something like that
+
+            if mode == MatchMode.EXCLUDE:
+                return standard_value not in value
+
+        if v_type == bool:
+            if mode == MatchMode.GREATER or mode == MatchMode.SMALLER or mode == MatchMode.EXCLUDE or mode == MatchMode.INCLUDE:
+                self.logger.error(
+                    f"Unsupported matchmode of [GREATER, SMALLER, EXCLUDE, INCLUDE, VARY] for type bool. Only mode Equal is supported")
+                return False
+
+            if (standard_value == "" or
+                standard_value.lower() == "ignore" or
+                standard_value.lower() == "none"):
+                return True
+
+            return standard_value == value
+
+        if v_type == list:
+            if mode == MatchMode.GREATER or mode == MatchMode.SMALLER or mode == MatchMode.EQUAL:
+                self.logger.error(f"Unsupported matchmode of [GREATER, SMALLER, VARY, EQUAL] for type list")
+                return False
+
+            if isinstance(value, str):
+                value = value.split(separater)
+
+            if mode == MatchMode.SUPER_INCLUDE:
+                for elements in standard_value:
+                    for v_elements in value:
+                        if elements in v_elements: break
+                    else:
+                        return False
+                return True
+
+            if mode == MatchMode.SUPER_EXCLUDE:
+                for elements in standard_value:
+                    for v_elements in value:
+                        if elements in v_elements: return False
+                return True
+
+            if mode == MatchMode.INCLUDE:
+                for elements in standard_value:
+                    if not (elements in value): return False
+                return True
+
+            if mode == MatchMode.EXCLUDE:
+                for elements in standard_value:
+                    if (elements in value): return False
+                return True
+
+            # if mode == MATCH_MODE.EQUAL:
+
+        self.logger.warning(f"No Know Operation with type: {v_type}. Match Mode: {mode}")
 
     @staticmethod
     def strict_type_check(var, t_type, v_name):
