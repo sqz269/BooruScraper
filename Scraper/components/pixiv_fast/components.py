@@ -1,9 +1,4 @@
-import json
-import operator
 import time
-from typing import Tuple
-
-import requests
 from dateutil.parser import parse as time_parse
 from pixivpy3.aapi import AppPixivAPI
 
