@@ -4,12 +4,15 @@ import parse
 import os
 
 def write_frequent_tags(output_file, data: Counter):
-    with open(output_file, "w") as file:
+    with open(output_file, "wb") as file:
+        file.write("tag_name,tag_count\n".encode("utf-8"))
         for entry in data.most_common():
-            file.write("{}, {}\n".format(entry[0], entry[1]))
+            file.write("{}, {}\n".format(entry[0], entry[1]).encode("utf-8"))
 
+def find_most_frequent_tags(src_csv: str, dst_csv: str, thresh_hold, delimiter, tags_column_name):
+    write_frequent_tags(dst_csv, get_most_frequent_tags(src_csv, thresh_hold, delimiter, tags_column_name))
 
-def get_most_frequent_tags(src_csv: str, thresh_hold=5, delimiter=","):
+def get_most_frequent_tags(src_csv: str, thresh_hold=5, delimiter=",", tags_column_name="image_tags"):
     """
     Get most frequent tags from scraped data
     """
@@ -19,11 +22,12 @@ def get_most_frequent_tags(src_csv: str, thresh_hold=5, delimiter=","):
 
     with open(src_csv, "r") as file:
         headers = file.readline().strip().split(delimiter) # Assume first line is the header and extract it
-        tags_column = headers.index("tags")
+        headers = [i.strip() for i in headers]
+        tags_column = headers.index(tags_column_name)
         for lines in file:
                          # First remove start end spaces then split them using the delimiter
                          # and finally get the tags columns
-            tags_string += lines.strip().split(delimiter)[tags_column] + " "  # Add a space to the end to separate it from next line
+            tags_string += lines.strip().split(delimiter)[tags_column].strip() + " "  # Add a space to the end to separate it from next line
 
         tags_count = Counter(tags_string.split(" "))
 
@@ -31,10 +35,7 @@ def get_most_frequent_tags(src_csv: str, thresh_hold=5, delimiter=","):
         for key, count in dropwhile(lambda key_count: key_count[1] >= thresh_hold, tags_count.most_common()):
             del tags_count[key]
 
-        print("There are {} tags left over".format(len(tags_count)))
-
     return tags_count
-
 
 def find_diff_all_delete(src_csv: str, files_dir: str, output_csv: str, file_format_string: str, thresh_hold=3, delimiter=",", post_format_unique_identifier="post_id"):
     """
@@ -97,7 +98,6 @@ def find_diff_all_delete(src_csv: str, files_dir: str, output_csv: str, file_for
         for (k, v), (k2, v2) in zip(post_entry_tags_counter.items(), post_entry_removed_tags_counter.items()):
         #   k = the tag name itself; v = the total occurrence of the tag; k2 = the deleted tags name; v2 = total times of the tag k2 has been deleted
             file.write(headers.format(tags=k, tags_count=v, deleted_tags=k2, deleted_tags_count=v2))
-
 
 def find_diff_remain_del(src_csv, files_dir, output_csv, file_format_string, thresh_hold=3, delimiter=",", post_format_unique_identifier="post_id"):
     """Find the tags for comparesion between the deleted and the not deleted files
@@ -165,3 +165,47 @@ def find_diff_remain_del(src_csv, files_dir, output_csv, file_format_string, thr
         file.write(headers)
         for entry in post_entry_tag_removed_counter.most_common():
             file.write("{},{}\n".format(entry[0], entry[1]))
+
+INT_TO_FUNCTION = {
+    1: find_most_frequent_tags,
+    2: find_diff_all_delete,
+    3: find_diff_remain_del
+}
+
+def start():
+    func = None
+    while True:
+        try:
+            print("1) Find The Most Frequent Tags")
+            print("2) Find Deleted Tags and Compare to All Existed Tags")
+            print("3) Find Deleted Tags and Compare to Remaining Tags which didn't get deleted")
+            func = int(input("Choose Function (1-3): "))
+            if (func > 3 or func <= 0):
+                raise TypeError()
+            break
+        except ValueError:
+            print("Please Enter a valid Option (1-3): ")
+
+    actual_function = INT_TO_FUNCTION[func]
+
+    if func == 1:
+        csv_path = input("Enter the path of the csv file: ")
+        delimiter = input("Enter CSV delimiter (default \",\"): ") or ","
+        out_csv = input("Enter the path for the output csv file: ")
+        threshold = input("Enter threshhold (default \"5\"): ") or 5
+        tags_column_name = input("Enter the name of the column contains tags: (default \"image_tags\"): ") or "image_tags"
+        actual_function(csv_path, out_csv, int(threshold), delimiter, tags_column_name)
+    else:
+        csv_path = input("Enter the path of the csv file: ")
+        f_dir = input("Enter the path to the directory that stores scraped images: ")
+        o_csv = input("Enter output csv's path (including name): ")
+        ff_str = input("Enter the file name format string (FILENAME_STRING in config): ")
+        ff_id = input("Enter the unique identifier for each image (image_id): ")
+        delimiter = input("Enter CSV delimiter (default \",\"): ") or ","
+        threshold = input("Enter threshhold (default \"3\"): ") or 3
+        args = [csv_path, f_dir, o_csv, ff_str, int(threshold), delimiter, ff_id]
+        actual_function(*args)
+
+
+if __name__ == "__main__":
+    start()
