@@ -24,3 +24,4 @@ if __name__ == "__main__":
     base_module = module_selection()
     scraper_base = init_scraper_base(base_module)
     scraper_base.entry_point(scraper_base)
+    input("Scraping completed. Press Enter to exit")
