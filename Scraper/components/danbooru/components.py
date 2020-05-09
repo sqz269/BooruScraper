@@ -7,8 +7,10 @@ import requests
 
 
 class MatchMode:
-    INCLUDE = 0
+    INCLUDE = 0  # Matches element in each list using == operator (sv == v)
     EXCLUDE = 1
+    SUPER_INCLUDE = 10  # Matches element in each list using in operator (sv in v)
+    SUPER_EXCLUDE = 11
 
     GREATER = 2
     SMALLER = 3
@@ -43,25 +45,25 @@ class ComponentsDanbooru(ComponentBasic):
     IMAGE_DATA_FIELD_TO_CONFIGURATION = {
         # WARNING: EXPERIMENTAL
         # Config name           : img_data[key]   value type  Compairson mode
-        "tags_extra": ["image_tags", list, MatchMode.INCLUDE],
-        "tags_exclude_extra": ["image_tags", list, MatchMode.EXCLUDE],
+        "tags_extra":           ["image_tags",        list, MatchMode.INCLUDE, " "],
+        "tags_exclude_extra":   ["image_tags",        list, MatchMode.EXCLUDE, " "],
 
-        # "rating"                : ["image_rating",      int,  MATCH_MODE.VARY   ],
-        "children": ["image_has_children", bool, MatchMode.EQUAL],
+        # "rating"                : ["image_rating",      int,  MATCH_MODE.VARY],
+        "children":             ["image_has_children",bool, MatchMode.EQUAL],
 
-        "extension": ["image_extension", list, MatchMode.INCLUDE],
-        "extension_exclude": ["image_extension", list, MatchMode.EXCLUDE],
+        "extension":            ["image_extension",   list, MatchMode.SUPER_INCLUDE, " "],
+        "extension_exclude":    ["image_extension",   list, MatchMode.SUPER_EXCLUDE, " "],
 
-        "max_width": ["image_width", int, MatchMode.SMALLER],
-        "min_width": ["image_width", int, MatchMode.GREATER],
-        "max_height": ["image_height", int, MatchMode.SMALLER],
-        "min_height": ["image_height", int, MatchMode.GREATER],
+        "max_width":            ["image_width",       int, MatchMode.GREATER],
+        "min_width":            ["image_width",       int, MatchMode.SMALLER],
+        "max_height":           ["image_height",      int, MatchMode.GREATER],
+        "min_height":           ["image_height",      int, MatchMode.SMALLER],
 
-        "min_fav_count": ["image_fav_count", int, MatchMode.GREATER],
-        "min_score": ["image_score", int, MatchMode.GREATER],
+        "min_fav_count":        ["image_fav_count",   int, MatchMode.SMALLER],  # image_fav_count smaller than min_fav_count?
+        "min_score":            ["image_score",       int, MatchMode.SMALLER],
 
-        "source_origin": ["image_source", list, MatchMode.INCLUDE],
-        "source_origin_exclude": ["image_source", list, MatchMode.EXCLUDE]
+        "source_origin":        ["image_source",      list, MatchMode.SUPER_INCLUDE, " "],
+        "source_origin_exclude":["image_source",      list, MatchMode.SUPER_EXCLUDE, " "]
     }
 
     def __init__(self, *args, **kwargs):
@@ -72,6 +74,9 @@ class ComponentsDanbooru(ComponentBasic):
     def generate_urls(self) -> List[Tuple[str, str]]:
         tags: list = self.config["tags"].split(" ")
         tags_exclude: list = self.config["tags_exclude"].split(" ")
+
+        tags = [i for i in tags if i]
+        tags_exclude = [i for i in tags_exclude if i]  # Remove empty elements
 
         # Optimise query: If tags query exceeds amount of tags you can put,
         # move them out of the query and check them individually in are_requirements_satisfied
@@ -119,54 +124,92 @@ class ComponentsDanbooru(ComponentBasic):
                                             short_circut=False) -> list:
         requirements_missed = []
         for k, v in data_to_config_dict.items():
-            if not self._validate_requirement(self.config[k], data_dict[v[0]], v[1], v[2]):
+            if not self._validate_requirement(self.config[k], *v, data=data_dict):
                 if short_circut: return [k]
                 requirements_missed.append(k)
         return requirements_missed
 
     def _validate_requirement(self, standard_value, value, v_type: Union[int, str, list, bool],
-                              mode: MatchMode) -> bool:
-        if isinstance(v_type, int):
+                              mode: MatchMode, separater=",", data=None) -> bool:
+        """Validates a requirement (duh)
+
+        Arguments:
+            standard_value {<T>} -- the value being compared (left side of the comparison operand)
+            value {str} -- the key to access the value of the image_data that we are going to compare.
+            v_type {Union[int, str, list, bool]} -- the value's data type we are comparing
+            mode {MatchMode} -- how we are comparing this value
+
+        Keyword Arguments:
+            separater {str} -- the separater we using if we are compairing list but value is a string and need split (default: {","})
+            data {dict} -- Image data for accessing value (default: {None})
+
+        Returns:
+            bool -- is the value matches MatchMode requirements (comparison operand returns true, or value in/excludes the value in standard_value)
+        """
+        value = data[value]
+        if v_type == int:
+            value = int(value)
             if mode == MatchMode.EXCLUDE or mode == MatchMode.INCLUDE:
                 self.logger.error(f"Unsupported matchmode of [EXCLUDE, INCLUDE] for type int")
                 return False
 
-            if MatchMode.EQUAL:
-                self.logger.debug("Standard value: {}")
+            if mode == MatchMode.EQUAL:
                 return standard_value == value
 
-            if MatchMode.GREATER:
+            if mode == MatchMode.GREATER:
                 return standard_value > value
 
-            if MatchMode.SMALLER:
+            if mode == MatchMode.SMALLER:
                 return standard_value < value
 
-        if isinstance(v_type, str):
+        if v_type == str:
             if mode == MatchMode.GREATER or mode == MatchMode.SMALLER:
                 self.logger.error(f"Unsupported matchmode of [GREATER, SMALLER] for type str")
                 return False
 
-            if MatchMode.EQUAL:
+            if mode == MatchMode.EQUAL:
                 return standard_value == value
 
-            if MatchMode.INCLUDE:
+            if mode == MatchMode.INCLUDE:
                 return standard_value in value  # TODO: Reverse compairson or something like that
 
-            if MatchMode.EXCLUDE:
+            if mode == MatchMode.EXCLUDE:
                 return standard_value not in value
 
-        if isinstance(v_type, bool):
-            if mode == MatchMode.GREATER or mode == MatchMode.SMALLER or mode == MatchMode.EXCLUDE or mode == MatchMode.INCLUDE or mode == MatchMode.VARY:
+        if v_type == bool:
+            if mode == MatchMode.GREATER or mode == MatchMode.SMALLER or mode == MatchMode.EXCLUDE or mode == MatchMode.INCLUDE:
                 self.logger.error(
                     f"Unsupported matchmode of [GREATER, SMALLER, EXCLUDE, INCLUDE, VARY] for type bool. Only mode Equal is supported")
                 return False
 
+            if (standard_value == "" or
+                standard_value.lower() == "ignore" or
+                standard_value.lower() == "none"):
+                return True
+
             return standard_value == value
 
-        if isinstance(v_type, list):
-            if mode == MatchMode.GREATER or mode == MatchMode.SMALLER or mode == MatchMode.VARY or mode == MatchMode.EQUAL:
+        if v_type == list:
+            if mode == MatchMode.GREATER or mode == MatchMode.SMALLER or mode == MatchMode.EQUAL:
                 self.logger.error(f"Unsupported matchmode of [GREATER, SMALLER, VARY, EQUAL] for type list")
                 return False
+
+            if isinstance(value, str):
+                value = value.split(separater)
+
+            if mode == MatchMode.SUPER_INCLUDE:
+                for elements in standard_value:
+                    for v_elements in value:
+                        if elements in v_elements: break
+                    else:
+                        return False
+                return True
+
+            if mode == MatchMode.SUPER_EXCLUDE:
+                for elements in standard_value:
+                    for v_elements in value:
+                        if elements in v_elements: return False
+                return True
 
             if mode == MatchMode.INCLUDE:
                 for elements in standard_value:
@@ -180,11 +223,14 @@ class ComponentsDanbooru(ComponentBasic):
 
             # if mode == MATCH_MODE.EQUAL:
 
+        self.logger.warning(f"No Know Operation with type: {v_type}. Match Mode: {mode}")
+
     def are_requirements_satisfied(self, data) -> bool:
-        is_satisfied = self.automated_requirements_verification(self.IMAGE_DATA_FIELD_TO_CONFIGURATION, data, False)
-        if not is_satisfied:
-            self.logger.debug(f"Requirements were not satisfied due to fields: {is_satisfied}")
-        return is_satisfied
+        unsatisfied_fields = self.automated_requirements_verification(self.IMAGE_DATA_FIELD_TO_CONFIGURATION, data, False)
+        if unsatisfied_fields:
+            self.logger.debug(f"Requirements were not satisfied due to fields: {unsatisfied_fields}")
+            return False
+        return True
 
     def entry_point(self, scraper_framework_base):
         return super().entry_point(scraper_framework_base)
