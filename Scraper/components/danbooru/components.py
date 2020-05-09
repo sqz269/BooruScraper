@@ -24,6 +24,12 @@ class ComponentsDanbooru(ComponentBasic):
     base_url = "https://danbooru.donmai.us/posts?page={page}&tags={tag}"
     base_submission_url = "https://danbooru.donmai.us/posts/{id}"
 
+    RATING_CHAR_TO_INT = {
+        "r": 2,
+        "q": 1,
+        "s": 0
+    }
+
     IMAGE_DATA_FIELD_TO_HTML_DATA_FIELD = {
         # required fields
         "image_id": "id",
@@ -225,12 +231,17 @@ class ComponentsDanbooru(ComponentBasic):
 
         self.logger.warning(f"No Know Operation with type: {v_type}. Match Mode: {mode}")
 
-    def are_requirements_satisfied(self, data) -> bool:
+    def are_requirements_satisfied(self, data: dict) -> bool:
         unsatisfied_fields = self.automated_requirements_verification(self.IMAGE_DATA_FIELD_TO_CONFIGURATION, data, False)
         if unsatisfied_fields:
             self.logger.debug(f"Requirements were not satisfied due to fields: {unsatisfied_fields}")
             return False
-        return True
+
+        # check rating requirements due to it's dependency on another configuration: RATING_CHECK_STRICT
+        if self.config["rating_check_strict"]:
+            return data["image_rating"] == self.config["rating"]
+        else:
+            return self.RATING_CHAR_TO_INT[self.config["rating"]] >= self.RATING_CHAR_TO_INT[data["image_rating"]]
 
     def entry_point(self, scraper_framework_base):
         return super().entry_point(scraper_framework_base)
