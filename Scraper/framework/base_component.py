@@ -135,7 +135,7 @@ class BaseComponent(Utils, metaclass=Singleton):
         value = data[value]
         if v_type == int:
             value = int(value)
-            if mode == MatchMode.EXCLUDE or mode == MatchMode.INCLUDE:
+            if mode in [MatchMode.EXCLUDE, MatchMode.INCLUDE]:
                 self.logger.error(f"Unsupported matchmode of [EXCLUDE, INCLUDE] for type int")
                 return False
 
@@ -149,7 +149,7 @@ class BaseComponent(Utils, metaclass=Singleton):
                 return standard_value < value
 
         if v_type == str:
-            if mode == MatchMode.GREATER or mode == MatchMode.SMALLER:
+            if mode in [MatchMode.GREATER, MatchMode.SMALLER]:
                 self.logger.error(f"Unsupported matchmode of [GREATER, SMALLER] for type str")
                 return False
 
@@ -163,7 +163,7 @@ class BaseComponent(Utils, metaclass=Singleton):
                 return standard_value not in value
 
         if v_type == bool:
-            if mode == MatchMode.GREATER or mode == MatchMode.SMALLER or mode == MatchMode.EXCLUDE or mode == MatchMode.INCLUDE:
+            if mode in [MatchMode.GREATER, MatchMode.SMALLER, MatchMode.EXCLUDE, MatchMode.INCLUDE]:
                 self.logger.error(
                     f"Unsupported matchmode of [GREATER, SMALLER, EXCLUDE, INCLUDE, VARY] for type bool. Only mode Equal is supported")
                 return False
@@ -176,7 +176,7 @@ class BaseComponent(Utils, metaclass=Singleton):
             return standard_value == value
 
         if v_type == list:
-            if mode == MatchMode.GREATER or mode == MatchMode.SMALLER or mode == MatchMode.EQUAL:
+            if mode in [MatchMode.GREATER, MatchMode.SMALLER, MatchMode.EQUAL]:
                 self.logger.error(f"Unsupported matchmode of [GREATER, SMALLER, VARY, EQUAL] for type list")
                 return False
 
