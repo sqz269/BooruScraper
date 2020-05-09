@@ -1,4 +1,3 @@
-from Scraper.libs.cfgBuilder import ConfigurationBuilder
 from Scraper.framework.base_component import BaseComponent
 
 from typing import List, Tuple

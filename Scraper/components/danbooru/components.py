@@ -1,6 +1,6 @@
 from Scraper.framework.components_basic import ComponentBasic
 from Scraper.framework.base_component import MatchMode
-from typing import Tuple, List, Union
+from typing import Tuple, List
 
 from bs4 import BeautifulSoup
 from bs4.element import Tag
