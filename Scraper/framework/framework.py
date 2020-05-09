@@ -148,7 +148,7 @@ def init_scraper_base(SuperClass: ComponentBasic, *args, **kwargs):
             self.logger.info(f"Created CSV file for collected image at: {csv_path}")
 
             # Write the headers of the CSV
-            csv_header = self.config["csv_entry_string"].replace("{", "").replace("}", "")
+            csv_header = self.config["csv_entry_string"].replace("{", "").replace("}", "") + "\n"
             self.logger.debug("Writing CSV header")
             self.csv_io.write(csv_header.encode("utf-8"))
 

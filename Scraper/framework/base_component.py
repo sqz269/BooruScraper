@@ -5,6 +5,7 @@ from Scraper.libs.singleton import Singleton
 
 from logging import Logger
 
+from typing import Union
 
 class MatchMode:
     INCLUDE = 0  # Matches element in each list using == operator (sv == v)
