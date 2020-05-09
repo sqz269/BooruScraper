@@ -78,9 +78,9 @@ class BaseComponent(Utils, metaclass=Singleton):
             print(f"[!] Failed to parse config file at location: {config_path}. File does not exist or inaccessible")
             input("[-] Base Component Initialization Failed; Press Enter to Exit")
             raise SystemExit("Failed to load Config")
-        self.debug_print(f"[+] Configuration loaded")
+        self.debug_print("[+] Configuration loaded")
 
-        self.debug_print(f"[*] Validating Configuration")
+        self.debug_print("[*] Validating Configuration")
         missing_keys = self.validate_basic_config_requirements()  # returns empty list if nothing is missing
         if missing_keys:
             print(f"[-] Invalid Config, Required fields are missing. Missing Keys: {missing_keys}")
@@ -136,7 +136,7 @@ class BaseComponent(Utils, metaclass=Singleton):
         if v_type == int:
             value = int(value)
             if mode in [MatchMode.EXCLUDE, MatchMode.INCLUDE]:
-                self.logger.error(f"Unsupported matchmode of [EXCLUDE, INCLUDE] for type int")
+                self.logger.error("Unsupported matchmode of [EXCLUDE, INCLUDE] for type int")
                 return False
 
             if mode == MatchMode.EQUAL:
@@ -150,7 +150,7 @@ class BaseComponent(Utils, metaclass=Singleton):
 
         if v_type == str:
             if mode in [MatchMode.GREATER, MatchMode.SMALLER]:
-                self.logger.error(f"Unsupported matchmode of [GREATER, SMALLER] for type str")
+                self.logger.error("Unsupported matchmode of [GREATER, SMALLER] for type str")
                 return False
 
             if mode == MatchMode.EQUAL:
@@ -165,7 +165,7 @@ class BaseComponent(Utils, metaclass=Singleton):
         if v_type == bool:
             if mode in [MatchMode.GREATER, MatchMode.SMALLER, MatchMode.EXCLUDE, MatchMode.INCLUDE]:
                 self.logger.error(
-                    f"Unsupported matchmode of [GREATER, SMALLER, EXCLUDE, INCLUDE, VARY] for type bool. Only mode Equal is supported")
+                    "Unsupported matchmode of [GREATER, SMALLER, EXCLUDE, INCLUDE, VARY] for type bool. Only mode Equal is supported")
                 return False
 
             if (standard_value == "" or
@@ -177,7 +177,7 @@ class BaseComponent(Utils, metaclass=Singleton):
 
         if v_type == list:
             if mode in [MatchMode.GREATER, MatchMode.SMALLER, MatchMode.EQUAL]:
-                self.logger.error(f"Unsupported matchmode of [GREATER, SMALLER, VARY, EQUAL] for type list")
+                self.logger.error("Unsupported matchmode of [GREATER, SMALLER, VARY, EQUAL] for type list")
                 return False
 
             if isinstance(value, str):

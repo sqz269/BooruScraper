@@ -68,7 +68,7 @@ class ComponentPixiv(ComponentBasic):
 
     def verify_requirements_basic(self, data: dict) -> bool:
         if data["isAdContainer"]:
-            self.logger.debug(f"Filter out submission due to it is an AD container")
+            self.logger.debug("Filter out submission due to it is an AD container")
             return False
 
         if self.config["ignore_bookmarked"] and not data["isBookmarkable"]:

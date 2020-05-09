@@ -75,12 +75,12 @@ class ComponentsDanbooru(ComponentBasic):
         # move them out of the query and check them individually in are_requirements_satisfied
         if len(tags) > 2:
             self.logger.warn(
-                f"tags in tags will exceed 2 tag query limit; Moving tags out of query into non-query checking")
+                "tags in tags will exceed 2 tag query limit; Moving tags out of query into non-query checking")
             self.config["tags_extra"].extend(tags[2:len(tags)])
 
         if len(tags) + len(tags_exclude) > 2:
             self.logger.warn(
-                f"tags in tags_exclude will exceed 2 tag query limit; Moving tags out of query into non-query checking")
+                "tags in tags_exclude will exceed 2 tag query limit; Moving tags out of query into non-query checking")
             self.config["tags_exclude_extra"].extend(tags_exclude[2:len(tags_exclude)])
 
         # joins the tags and exclude tags into one query string
