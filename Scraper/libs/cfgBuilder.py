@@ -115,7 +115,7 @@ class ConfigurationBuilder(object, metaclass=Singleton):
 
 
     def parse_cfg_from_module_directory(self, config_name: str) -> bool:
-        for root, sub_folder, files in os.walk("."):
+        for root, _, files in os.walk("."):
             for item in files:
                 if item == ".config_directory" :
                     file_path = str(os.path.abspath(os.path.join(root, config_name)))
