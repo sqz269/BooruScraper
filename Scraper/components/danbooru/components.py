@@ -13,6 +13,7 @@ class ComponentsDanbooru(ComponentBasic):
 
     RATING_CHAR_TO_INT = {
         "r": 2,
+        "e": 2,
         "q": 1,
         "s": 0
     }
@@ -74,12 +75,12 @@ class ComponentsDanbooru(ComponentBasic):
         # Optimise query: If tags query exceeds amount of tags you can put,
         # move them out of the query and check them individually in are_requirements_satisfied
         if len(tags) > 2:
-            self.logger.warn(
+            self.logger.warning(
                 "tags in tags will exceed 2 tag query limit; Moving tags out of query into non-query checking")
             self.config["tags_extra"].extend(tags[2:len(tags)])
 
         if len(tags) + len(tags_exclude) > 2:
-            self.logger.warn(
+            self.logger.warning(
                 "tags in tags_exclude will exceed 2 tag query limit; Moving tags out of query into non-query checking")
             self.config["tags_exclude_extra"].extend(tags_exclude[2:len(tags_exclude)])
 
@@ -123,6 +124,8 @@ class ComponentsDanbooru(ComponentBasic):
         if self.config["rating_check_strict"]:
             return data["image_rating"] == self.config["rating"]
         else:
+            if (data["image_rating"] == "e"):
+                self.logger.warning("Unknown Rating: e. Image id: {}".format(data["image_id"]))
             return self.RATING_CHAR_TO_INT[self.config["rating"]] >= self.RATING_CHAR_TO_INT[data["image_rating"]]
 
     def entry_point(self, scraper_framework_base):
