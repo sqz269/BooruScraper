@@ -49,7 +49,7 @@ def init_scraper_base(SuperClass: ComponentBasic, *args, **kwargs):
                                     thread_name_prefix=self.config["thread_name_prefix"]) as executor:
                 for url in urls:
                     self.logger.debug(f"Queuing url: {url[0]} for processing")
-                    executor.submit(self._start, url).result()
+                    executor.submit(self._start, url)
                 self.logger.info(
                     f"Queued {len(urls)} urls for processing, with {self.config['max_concurrent_thread']} available workers")
 
