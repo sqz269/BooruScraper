@@ -5,10 +5,8 @@ import time
 import requests
 from bs4 import BeautifulSoup
 from dateutil.parser import parse as time_parse
-from pixivpy3.aapi import AppPixivAPI
 
 from Scraper.framework.components_basic import ComponentBasic
-from Scraper.framework.base_component import MatchMode
 
 IMAGE_DATA_FIELD_TO_JSON_DATA_FIELD = {
     "image_id": "id",
