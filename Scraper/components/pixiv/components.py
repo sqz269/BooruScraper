@@ -62,8 +62,6 @@ class ComponentPixiv(ComponentBasic):
         # self.download_cookie    = {"PHPSESSID": self.config["phpsessid"]}
         # User-Agent Header will auto configure
 
-        self.logger.info("Logging in to Pixiv")
-
     def generate_urls(self):  # TODO: Make tags_exclude_query actually work
         f_tags = self.config["tags_query"] + self.config["tags_exclude_query"]
         base_url_formatted = self.api_endpoint.format(f_tags=f_tags, **self.config.get_configuration())
@@ -73,6 +71,7 @@ class ComponentPixiv(ComponentBasic):
         return list_of_urls
 
     def process_page(self, url: str):
+        self.logger.debug(f"Processing url: {url}")
         resp = requests.get(url, headers=self.request_header, cookies=self.request_cookie)
         api_resp = json.loads(resp.content)
         if resp.status_code >= 400:
@@ -173,8 +172,11 @@ class ComponentPixiv(ComponentBasic):
         # do some math calculation
         image_data.update({"image_avg_bookmark_perday":
             self._calculate_avg_bookmark_per_day(image_data["image_date"], image_data["image_bookmarks"])})
-        image_data.update({"image_view_bookmark_ratio":
-            (data["image_views"] / data["image_bookmarks"])})
+
+        if image_data["image_bookmarks"] != 0:  # prevent 0 division error
+            image_data.update({"image_view_bookmark_ratio":
+                (image_data["image_views"] / image_data["image_bookmarks"])})
+        else: image_data["image_view_bookmark_ratio"] = 0
 
         extension = data["urls"][self.config["image_size"]].split(".")[-1]
         image_data.update({"image_extension": extension})
@@ -201,14 +203,17 @@ class ComponentPixiv(ComponentBasic):
             self.logger.debug(f"Filter out {data['image_id']} due to insufficient bookmarks: {data['image_bookmarks']}")
             return False
 
-        if not (int(data["image_views"] / data["image_bookmarks"]) >= self.config["view_bookmark_ratio"]):
-            if data["image_bookmarks"] >= self.config["view_bookmark_ratio_bypass"] > 0:
-                self.logger.debug(
-                    f"Did not filter out {data['image_id']} even it's view/bookmark ratio did not meet requirement because it's total book mark {data['image_bookmarks']} triggered bypass")
-            else:
-                self.logger.debug(
-                    f"Filter out {data['image_id']} due to insufficient view/bookmark ratio: {int(data['image_views'] / data['image_bookmarks'])}")
-                return False
+        try:
+            if not (int(data["image_views"] / data["image_bookmarks"]) >= self.config["view_bookmark_ratio"]):
+                if data["image_bookmarks"] >= self.config["view_bookmark_ratio_bypass"] > 0:
+                    self.logger.debug(
+                        f"Did not filter out {data['image_id']} even it's view/bookmark ratio did not meet requirement because it's total book mark {data['image_bookmarks']} triggered bypass")
+                else:
+                    self.logger.debug(
+                        f"Filter out {data['image_id']} due to insufficient view/bookmark ratio: {int(data['image_views'] / data['image_bookmarks'])}")
+                    return False
+        except ZeroDivisionError:
+            return False  # this should already be guarded with config BOOKMARK_MIN
 
         return True
 
@@ -216,8 +221,7 @@ class ComponentPixiv(ComponentBasic):
     def _calculate_avg_bookmark_per_day(created_date: str, total_bookmark: int):
         current_JST_time = time.time() + 32400  # 32400 is 9 hours which is the JST offset from CST (Central Daylight Time), That is assuming you are in CST
         upload_time = time_parse(created_date).timestamp()  # parse the ISO-8601 Formmatted string to Unix Epoch
-        days_passed = (
-                              current_JST_time - upload_time) / 86400  # divide the difference between current time and upload time by a day
+        days_passed = (current_JST_time - upload_time) / 86400  # divide the difference between current time and upload time by a day
         bookmark_per_day = total_bookmark / days_passed
         return bookmark_per_day
 
