@@ -57,9 +57,8 @@ class ComponentPixiv(ComponentBasic):
 
     def __init__(self, init_verbose=True):
         super().__init__("pixiv.ini", init_verbose=init_verbose)
-
+        self.request_cookie    = {"PHPSESSID": self.config["phpsessid"]}
         self.url_as_referer = True
-        # self.download_cookie    = {"PHPSESSID": self.config["phpsessid"]}
         # User-Agent Header will auto configure
 
     def generate_urls(self):  # TODO: Make tags_exclude_query actually work
