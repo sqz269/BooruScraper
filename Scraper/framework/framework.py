@@ -85,6 +85,7 @@ def init_scraper_base(SuperClass: ComponentBasic, *args, **kwargs):
                             dl_path = page_path
                             if self.config["use_submission_specific_directory"]:
                                 dl_path = os.path.join(page_path, img_data["image_id"])
+                                os.makedirs(dl_path, True)
                                 self.logger.debug(f"Using Submission specific directory at: {dl_path}")
                             for index, img_url in enumerate(img_data["image_links"]):
                                 self.logger.debug(f"Downloading image: {img_data['image_id']}")
