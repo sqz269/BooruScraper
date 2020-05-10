@@ -8,13 +8,18 @@ from dateutil.parser import parse as time_parse
 from pixivpy3.aapi import AppPixivAPI
 
 from Scraper.framework.components_basic import ComponentBasic
+from Scraper.framework.base_component import MatchMode
 
 IMAGE_DATA_FIELD_TO_JSON_DATA_FIELD = {
     "image_id": "id",
+    # image_links
+    # image_parent_link
 
+    # image_tags
+    # image_extension
     "image_title":          "title",
     "image_type":           "illustType",
-    "image_date":           "create_date",
+    "image_date":           "createDate",
     "image_uploader_id":    "userId",
     "image_uploader_name":  "userName",
     "image_width":          "width",
@@ -23,7 +28,7 @@ IMAGE_DATA_FIELD_TO_JSON_DATA_FIELD = {
     "image_bookmarks":      "bookmarkCount",
     "image_views":          "viewCount",
     "image_likes":          "likeCount",
-    "image_comments":       "commentCount",
+    "image_comments":       "commentCount", # number of comments
     "image_is_original":    "isOriginal"
 }
 
@@ -82,18 +87,22 @@ class ComponentPixiv(ComponentBasic):
 
         for result in search_resp:
             if self.verify_requirements_basic(result):
-                filtered_results.append(result)
+                filtered_results.append(result["id"])
 
-        return filtered_results
+        image_data = []
+        for result in filtered_results:
+            self.logger.debug("Retriving extended data for image with id: {}".format(result))
+            image_data.append(self.retrive_extended_data(result))
 
-    def verify_requirements_basic(self, data: dict) -> bool:
+        return image_data
+
+    def verify_requirements_basic(self, data: dict) -> bool:  # requirements that is
         if data["isAdContainer"]:
             self.logger.debug("Filter out submission due to it is an AD container")
             return False
 
         if self.config["ignore_bookmarked"] and not data["isBookmarkable"]:
-            self.logger.debug(
-                f"Filter out {data['id']} due to target is not bookmarkable, which assuming already bookmarked")
+            self.logger.debug(f"Filter out {data['id']} due to target is not bookmarkable, which probably because already bookmarked")
             return False
 
         # Check if user is not in our filtered list
@@ -147,81 +156,63 @@ class ComponentPixiv(ComponentBasic):
             self.logger.error(f"Error while getting artwork page. Status Code: {r.status_code}")
             return;
 
-        bs = BeautifulSoup(r.content, "lxml")
+        bs = BeautifulSoup(r.content, "lxml", from_encoding=r.encoding)
         artwork_details = bs.find("meta", attrs={"id": "meta-preload-data"})
         artwork_details = json.loads(artwork_details.get("content"))
         return self.restructure_extended_data(artwork_details)
 
     def restructure_extended_data(self, data: dict):
-        data = data["illust"][data["illust"].keys()[0]]
+        data = data["illust"][list(data["illust"].keys())[0]]
         image_data = {}
         for k, v in IMAGE_DATA_FIELD_TO_JSON_DATA_FIELD.items():
             image_data.update({k: data[v]})
+        # Process tags
+        tags_list = data["tags"]["tags"]
+        tags_string = " ".join([i["tag"] for i in tags_list])
+        image_data.update({"image_tags": tags_string})
+        # Process links
+        image_data.update({"image_parent_link": self.artwork_view_url.format(id=image_data["image_id"])})
+        # do some math calculation
+        image_data.update({"image_avg_bookmark_perday":
+            self._calculate_avg_bookmark_per_day(image_data["image_date"], image_data["image_bookmarks"])})
+        image_data.update({"image_view_bookmark_ratio":
+            (data["image_views"] / data["image_bookmarks"])})
 
-
+        extension = data["urls"][self.config["image_size"]].split(".")[-1]
+        image_data.update({"image_extension": extension})
+        # because the response only contains the direct link of the first image,
+        # we have to make out rest of the image url
+        base_url = data["urls"]["original"].replace("p0", "p{}")
+        image_urls = [base_url.format(i) for i in range(0, image_data["image_page_count"])]
+        image_data.update({"image_links": image_urls})
+        return image_data
 
     def are_requirements_satisfied(self, data: dict):
         # Very easy to hit rate limit
-        details = self.pixiv_app_api.illust_detail(data["id"])[ "illust"]  # get some extended infomation such as bookmark count and view count
-
-        if not (self._calculate_avg_bookmark_per_day(details["create_date"], details["total_bookmarks"]) >=
+        if not (self._calculate_avg_bookmark_per_day(data["image_date"], data["image_bookmarks"]) >=
                 self.config["avg_bookmark_per_day"]):
-            self.logger.debug(
-                f"Filter out {data['id']} due to insufficient avg bookmark perday: {int(self._calculate_avg_bookmark_per_day(details['create_date'], details['total_bookmarks']))}")
+            self.logger.debug(f"Filter out {data['image_id']} due to insufficient avg bookmark perday: {int(self._calculate_avg_bookmark_per_day(data['image_date'], data['image_bookmarks']))}")
             return False
 
-        if not (details["total_view"] >= self.config["view_min"]):
-            self.logger.debug(f"Filter out {details['id']} due to insufficient view counts: {details['total_view']}")
+        if not (data["image_views"] >= self.config["view_min"]):
+            self.logger.debug(f"Filter out {data['image_id']} due to insufficient view counts: {data['image_views']}")
             return False
 
         # Check if the bookmark count matches requirements
-        if not (details["total_bookmarks"] >= self.config["bookmark_min"]):
-            self.logger.debug(f"Filter out {details['id']} due to insufficient bookmarks: {details['total_bookmarks']}")
+        if not (data["image_bookmarks"] >= self.config["bookmark_min"]):
+            self.logger.debug(f"Filter out {data['image_id']} due to insufficient bookmarks: {data['image_bookmarks']}")
             return False
 
-        if not (int(details["total_view"] / details["total_bookmarks"]) <= self.config["view_bookmark_ratio"]):
-            if details["total_bookmarks"] >= self.config["view_bookmark_ratio_bypass"] > 0:
+        if not (int(data["image_views"] / data["image_bookmarks"]) >= self.config["view_bookmark_ratio"]):
+            if data["image_bookmarks"] >= self.config["view_bookmark_ratio_bypass"] > 0:
                 self.logger.debug(
-                    f"Did not filter out {details['id']} even it's view/bookmark ratio did not meet requirement because it's total book mark {details['total_bookmarks']} triggered bypass")
+                    f"Did not filter out {data['image_id']} even it's view/bookmark ratio did not meet requirement because it's total book mark {data['image_bookmarks']} triggered bypass")
             else:
                 self.logger.debug(
-                    f"Filter out {details['id']} due to insufficient view/bookmark ratio: {int(details['total_view'] / details['total_bookmarks'])}")
+                    f"Filter out {data['image_id']} due to insufficient view/bookmark ratio: {int(data['image_views'] / data['image_bookmarks'])}")
                 return False
 
-        self._restructure_image_data(data, details)
-
         return True
-
-    def _restructure_image_data(self, org_data: dict, extra_data: dict):
-        base_submission_url = "https://www.pixiv.net/artworks/{illustId}"
-
-        extra_data_keys = [
-            "id", "title", "type", "create_date", "page_count",
-            "total_view", "total_bookmarks", "total_comments",
-            "width", "height"
-        ]
-
-        org_data_keys = ["tags", "userId", "userName"]
-
-        org_data_copy = org_data.copy()
-
-        org_data.clear()  # clear the current content
-
-        # Because dict is immutable we can update it's value cross the board
-        # using the .update() method. do not assign as it is not pass by reference
-        org_data.update({"image_parent_link": base_submission_url.format(illustId=extra_data["id"])})
-
-        org_data.update({"image_id": extra_data["id"]})
-
-        # Get list of direct link to the images to download
-        img_raw_link = [img["image_urls"][self.config["image_size"]] for img in extra_data["meta_pages"]]
-        org_data.update({"image_links": img_raw_link})
-
-        for data_keys in extra_data_keys:
-            org_data.update({data_keys: extra_data[data_keys]})
-
-        for data_keys in org_data_keys:
-            org_data.update({data_keys: org_data_copy[data_keys]})
 
     @staticmethod
     def _calculate_avg_bookmark_per_day(created_date: str, total_bookmark: int):
