@@ -166,7 +166,7 @@ class ComponentPixiv(ComponentBasic):
             image_data.update({k: data[v]})
         # Process tags
         tags_list = data["tags"]["tags"]
-        tags_string = " ".join([i["tag"] for i in tags_list])
+        tags_string = " ".join(i["tag"] for i in tags_list)
         image_data.update({"image_tags": tags_string})
         # Process links
         image_data.update({"image_parent_link": self.artwork_view_url.format(id=image_data["image_id"])})
