@@ -56,8 +56,13 @@ class Utils(object):
 
                 try:
                     if keep_separate:
-                        self.logger.debug("Copying file: {} -> {}".format(file_abs_path, dst))
-                        shutil.copy(file_abs_path, dst)
+                        # Copy Require full path name, including the filename
+                        full_dst = os.path.join(dst, file_abs_path.split(os.sep)[-1]) # get the source filename and add it to dst path
+                        self.logger.debug("Copying file: {} -> {}".format(file_abs_path, full_dst))
+                        if keep_parent_directory:
+                            shutil.copytree(file_abs_path, full_dst)
+                        else:
+                            shutil.copy(file_abs_path, full_dst)
                     else:
                         self.logger.debug("Moving file: {} -> {}".format(file_abs_path, dst))
                         shutil.move(file_abs_path, dst)
