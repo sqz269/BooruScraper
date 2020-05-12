@@ -106,13 +106,7 @@ def find_diff_del(src_csv, files_dir, output_csv, file_format_string, threshold,
         for (k, v), (k1, v1), (k2, v2) in zip(post_all_tags_counter.items(), post_removed_tags_counter.items(), post_remaining_tags_counter.items()):
             file.write(f"{k},{v},,{k1},{v1},,{k2},{v2}\n".encode("utf-8"))
 
-INT_TO_FUNCTION = {
-    1: find_most_frequent_tags,
-    2: find_diff_del
-}
-
 def start():
-    func = None
     while True:
         try:
             print("1) Find The Most Frequent Tags")
@@ -124,15 +118,13 @@ def start():
         except ValueError:
             print("Please Enter a valid Option (1-2): ")
 
-    actual_function = INT_TO_FUNCTION[func]
-
     if func == 1:
         csv_path = input("Enter the path of the csv file: ")
         delimiter = input("Enter CSV delimiter (default \",\"): ") or ","
         out_csv = input("Enter the path for the output csv file: ")
-        threshold = input("Enter threshhold (default \"5\"): ") or 5
+        threshold = int(input("Enter threshhold (default \"5\"): ")) or 5
         tags_column_name = input("Enter the name of the column contains tags: (default \"image_tags\"): ") or "image_tags"
-        actual_function(csv_path, out_csv, int(threshold), delimiter, tags_column_name)
+        find_most_frequent_tags(csv_path, out_csv, int(threshold), delimiter, tags_column_name)
     else:
         csv_path = input("Enter the path of the csv file: ")
         f_dir = input("Enter the path to the directory that stores scraped images: ")
@@ -141,9 +133,9 @@ def start():
         ff_id = input("Enter the unique identifier for each image (default \"image_id\"): ") or "image_id"
         tags_column_name = input("Enter the name of the column contains tags: (default \"image_tags\"): ") or "image_tags"
         delimiter = input("Enter CSV delimiter (default \",\"): ") or ","
-        threshold = input("Enter threshhold (default \"3\"): ") or 3
+        threshold = int(input("Enter threshhold (default \"3\"): ")) or 3
         args = [csv_path, f_dir, o_csv, ff_str, int(threshold), delimiter, ff_id, tags_column_name]
-        actual_function(*args)
+        find_diff_del(*args)
 
 if __name__ == "__main__":
     start()
