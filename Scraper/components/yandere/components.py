@@ -1,4 +1,4 @@
-from Scraper.framework._base_component import BaseComponent
+from Scraper.framework.base_component import BaseComponent
 
 class ComponentYandere(BaseComponent):
     pass
