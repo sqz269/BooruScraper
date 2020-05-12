@@ -36,7 +36,7 @@ def init_scraper_base(SuperClass: ComponentBasic, *args, **kwargs):
                                                 First element of tuple should be the actual URL
                                                 Second element should be the page the url corresponds to
             """
-            self.logger.info("Prepairing folders and files")
+            self.logger.info("Preparing folders and files")
             self.initialize_file_and_directory()
 
             self.logger.debug("Generating list of urls that will be scraped")

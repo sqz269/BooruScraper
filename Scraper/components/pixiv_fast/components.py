@@ -88,7 +88,8 @@ class ComponentPixivFast(ComponentBasic):
             for keys in exposed_keys:
                 submission_data.update({keys: submission[keys]})
 
-            tags = [tag["name"] for tag in submission["tags"]]
+            tags = " ".join(tag["name"] for tag in submission["tags"])
+            submission_data.update({"tags": tags})
 
             submission_data.update({"user_id": submission["user"]["id"]})
             submission_data.update({"user_name": submission["user"]["name"]})
