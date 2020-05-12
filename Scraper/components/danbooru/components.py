@@ -34,7 +34,7 @@ class ComponentsDanbooru(ComponentBasic):
         "image_fav_count": "fav-count",
         "image_extension": "file-ext",
         "image_source": "normalized-source"
-    };
+    }
 
     IMAGE_DATA_FIELD_TO_CONFIGURATION = {
         # WARNING: EXPERIMENTAL

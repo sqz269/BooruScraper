@@ -30,10 +30,6 @@ IMAGE_DATA_FIELD_TO_JSON_DATA_FIELD = {
     "image_is_original":    "isOriginal"
 }
 
-IMAGE_DATA_FIELD_TO_CONFIGURATION = {
-
-}
-
 class ComponentPixiv(ComponentBasic):
     api_endpoint = ("""
         https://www.pixiv.net/ajax/search/artworks/{f_tags}?word={f_tags}

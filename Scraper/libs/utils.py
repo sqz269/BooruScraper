@@ -4,7 +4,7 @@ import os
 import shutil
 import requests
 
-class Utils(object):
+class Utils:
 
 
     def __init__(self, logger):

@@ -4,7 +4,7 @@ import os
 import parse
 from Scraper.libs.singleton import Singleton
 
-class ConfigurationBuilder(object, metaclass=Singleton):
+class ConfigurationBuilder(metaclass=Singleton):
 
 
     def __init__(self):
@@ -143,6 +143,6 @@ class ConfigurationBuilder(object, metaclass=Singleton):
 
 if __name__ == "__main__":
     cfg = ConfigurationBuilder()
-    cfg.prase_cfg_complete(input("Enter config Path: "));
+    cfg.prase_cfg_complete(input("Enter config Path: "))
     print(cfg.configuration)
     input("Press Enter to Exit")

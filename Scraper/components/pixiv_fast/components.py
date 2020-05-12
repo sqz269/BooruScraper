@@ -32,11 +32,11 @@ class ComponentPixivFast(ComponentBasic):
         # Check of extra tag requirements
         for tag in data["tags"]:
             if tag in self.config["tags_bypass"]:
-                self.logger.debug(f"Accepted {data['id']} due to tag bypass: {tag}");
+                self.logger.debug(f"Accepted {data['id']} due to tag bypass: {tag}")
                 return True
 
             if tag in self.config["tags_exclude"]:
-                self.logger.debug(f"Accepted {data['id']} due to tag exclude: {tag}");
+                self.logger.debug(f"Accepted {data['id']} due to tag exclude: {tag}")
                 return False
 
         # Check if illust type requirements match

@@ -161,7 +161,7 @@ def init_scraper_base(SuperClass: ComponentBasic, *args, **kwargs):
                 os.mkdir(dir_merge)
                 for directory in self.directory_created:  # merge each directory
                     self.merge_dirs(directory, dir_merge,
-                        keep_separate=self.config["merge_file_keep_separate"],
-                        keep_parent_directory=self.config["use_submission_specific_directory"])
+                                    keep_separate=self.config["merge_file_keep_separate"],
+                                    keep_parent_directory=self.config["use_submission_specific_directory"])
 
     return ScraperBase(*args, **kwargs)
