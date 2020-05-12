@@ -124,8 +124,6 @@ class ComponentsDanbooru(ComponentBasic):
         if self.config["rating_check_strict"]:
             return data["image_rating"] == self.config["rating"]
         else:
-            if (data["image_rating"] == "e"):
-                self.logger.warning("Unknown Rating: e. Image id: {}".format(data["image_id"]))
             return self.RATING_CHAR_TO_INT[self.config["rating"]] >= self.RATING_CHAR_TO_INT[data["image_rating"]]
 
     def entry_point(self, scraper_framework_base):
