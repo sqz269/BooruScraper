@@ -41,6 +41,9 @@ def init_scraper_base(SuperClass: ComponentBasic, *args, **kwargs):
 
             self.logger.debug("Generating list of urls that will be scraped")
             urls = self.generate_urls()
+            if (self.config["reverse_generated_url"]):
+                self.logger.debug("Reversing generated url")
+                urls = urls[::-1]
 
             if (self.config["max_concurrent_thread"] > 5):
                 self.logger.warning("Max conccurent thread exceeds 5, some server might issue temp ban on your ip")
