@@ -6,4 +6,13 @@ import requests
 class ComponentGelbooru(ComponentBasic):
 
     def __init__(self):
-        super().__init__()
+        super().__init__("gelbooru.ini")
+
+    def generate_urls(self):
+        return super().generate_urls()
+
+    def process_page(self, url):
+        return super().process_page(url)
+
+    def are_requirements_satisfied(self, data):
+        return super().are_requirements_satisfied(data)
