@@ -19,8 +19,11 @@ If you launched command prompt using **normal user** use this command:  `pip ins
 1. You guys are good enough to figure it out yourself, but still note: python version 3.6 or above is required due to f-string expression
 
 ## User Guide
+### Currently Available Scrapers
+- Pixiv
+- Danbooru
 ### Configuring and Running the scraper
-1. An configuration directory already exist at: ./config
+1. A configuration directory already exist at: ./config
 2. Open the scraper you want to config with your fav text editor
 3. Please read the documentation for each scraper, some instructions in one scraper may not apply to others
 4. After the scraper is properly configured, run main.py to start the scraper
