@@ -20,7 +20,7 @@ class ComponentGelbooru(ComponentBasic):
         tags_exclude = ("+".join(["-" + i for i in self.config["tags_exclude"]]))
 
         rating = ""
-        if (self.config["rating"] or self.config["rating_exclude"]):
+        if (self.config["rating"] and self.config["rating_exclude"]):
             self.logger.warn("Both \"rating\" and \"rating_exclude\" are specified. but only one can exist. Using \"rating_exclude\"")
             rating = f"-rating:{self.config['rating_exclude']}"
         else:
@@ -28,8 +28,9 @@ class ComponentGelbooru(ComponentBasic):
                 rating = f"rating:{self.config['rating']}"
             elif (self.config["rating_exclude"]):
                 rating = f"rating:{self.config['rating_exclude']}"
-        self.logger.debug(f"Constructed query: {tags_exclude}+{tags_include}+{rating}")
-        return f"{tags_exclude}+{tags_include}+{rating}"
+        query_terms = "+".join([i for i in [tags_exclude, tags_include, rating] if i])
+        self.logger.debug(f"Constructed query: {query_terms}")
+        return query_terms
 
     def generate_urls(self):
         # Urls page number increment by 42 and that's because there is 42 image on a page
