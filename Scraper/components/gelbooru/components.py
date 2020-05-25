@@ -55,7 +55,7 @@ class ComponentGelbooru(ComponentBasic):
         image_org_path = f"{url.scheme}://{url.netloc}//images/{image_hash[0:2]}/{image_hash[2:4]}/{image_hash}"
 
         # Guess the file extension
-        is_video:ext = [".mp4"] if is_video else [".jpg", ".png"]
+        ext = [".mp4"] if is_video else [".jpg", ".png"]
 
         for extension in ext:
             full_url = image_org_path + extension
