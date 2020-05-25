@@ -46,8 +46,6 @@ class ComponentGelbooru(ComponentBasic):
             if kw in tags:
                 is_video = True;
 
-        ext = None
-
         # build the base url w/o the image extension
         url = urlparse(org_url)
         url_path = url.path
