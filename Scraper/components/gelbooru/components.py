@@ -7,6 +7,8 @@ from Scraper.framework.components_basic import ComponentBasic
 
 # TODO: Fix a problem where config {tags} used in master dir string
 # will be presented in the form of a list instead of expected string
+
+
 class ComponentGelbooru(ComponentBasic):
     BASE_URL = "https://gelbooru.com/index.php?page=post&s=list&tags={tag}&pid={page}"
     IMAGES_PER_PAGE = 42
@@ -17,18 +19,18 @@ class ComponentGelbooru(ComponentBasic):
 
     def _construct_query(self) -> str:
         tags_include = ("+".join(self.config["tags"]))
-        tags_exclude = ("+".join(["-" + i for i in self.config["tags_exclude"]]))
+        tags_exclude = ("+".join("-" + i for i in self.config["tags_exclude"]))
 
         rating = ""
         if (self.config["rating"] and self.config["rating_exclude"]):
-            self.logger.warn("Both \"rating\" and \"rating_exclude\" are specified. but only one can exist. Using \"rating_exclude\"")
+            self.logger.warning("Both \"rating\" and \"rating_exclude\" are specified. but only one can exist. Using \"rating_exclude\"")
             rating = f"-rating:{self.config['rating_exclude']}"
         else:
             if (self.config["rating"]):
                 rating = f"rating:{self.config['rating']}"
             elif (self.config["rating_exclude"]):
                 rating = f"rating:{self.config['rating_exclude']}"
-        query_terms = "+".join([i for i in [tags_exclude, tags_include, rating] if i])
+        query_terms = "+".join(i for i in [tags_exclude, tags_include, rating] if i)
         self.logger.debug(f"Constructed query: {query_terms}")
         return query_terms
 
@@ -41,7 +43,8 @@ class ComponentGelbooru(ComponentBasic):
         video_kw = ["webm", "animated"]
         is_video = False
         for kw in video_kw:
-            if kw in tags: is_video = True;
+            if kw in tags:
+                is_video = True;
 
         ext = None
 
@@ -54,8 +57,7 @@ class ComponentGelbooru(ComponentBasic):
         image_org_path = f"{url.scheme}://{url.netloc}//images/{image_hash[0:2]}/{image_hash[2:4]}/{image_hash}"
 
         # Guess the file extension
-        if is_video: ext = [".mp4"]
-        else: ext = [".jpg", ".png"]
+        is_video:ext = [".mp4"] if is_video else [".jpg", ".png"]
 
         for extension in ext:
             full_url = image_org_path + extension
@@ -64,8 +66,7 @@ class ComponentGelbooru(ComponentBasic):
             r = requests.head(full_url, headers=self.request_header)
             if r.status_code <= 400:
                 return (full_url, extension)
-            else:
-                self.logger.debug("Original image did not have file extension type: {}".format(extension))
+            self.logger.debug("Original image did not have file extension type: {}".format(extension))
         self.logger.warning("Failed to find an applicable file extension for image with original url: {}. Ignoring".format(org_url))
         return ("", "")
 
