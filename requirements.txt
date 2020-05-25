@@ -6,3 +6,5 @@ colorama  # colorful output on windows
 
 parse  # for reverse formatting
 python-dateutil
+
+PixivPy
