@@ -52,7 +52,7 @@ class ComponentGelbooru(ComponentBasic):
 
         # Guess the file extension
         if is_video: ext = [".mp4"]
-        else: ext = [".jpg", ".png"]  # or .png, idk probably will implement fallback url
+        else: ext = [".jpg", ".png"]
 
         for extension in ext:
             full_url = image_org_path + extension
@@ -62,12 +62,13 @@ class ComponentGelbooru(ComponentBasic):
             if r.status_code <= 400:
                 return full_url
             else:
-                self.logger.info("Original image did not have file extension type: {}".format(extension))
+                self.logger.debug("Original image did not have file extension type: {}".format(extension))
         self.logger.warning("Failed to find an applicable file extension for image with original url: {}".format(org_url))
         return ""
 
     def _extract_img_data(self, web_data: bytes, encoding="utf-8") -> list:
         bs = BeautifulSoup(web_data, "lxml", from_encoding=encoding)
+        parent_base_url = "https://gelbooru.com/index.php?page=post&s=view&id={id}"
 
         image_data = []
         img = bs.find_all("img", attrs={"class": "thumbnail-preview"})
@@ -85,6 +86,17 @@ class ComponentGelbooru(ComponentBasic):
             # Get image's highres url
             image_url = self._predict_highres_url(elem["src"], image_tags)
 
+            img_data = {
+                "image_id": img_id,
+                "image_links": [image_url],
+                "image_parent_link": parent_base_url.format(id=img_id),
+
+                "image_score": image_score,
+                "image_tags": image_tags,
+                "image_rating": image_rating
+            }
+            image_data.append(img_data)
+        return image_data
 
     def process_page(self, url: str):
         r = requests.get(url, headers=self.request_header)
@@ -93,5 +105,7 @@ class ComponentGelbooru(ComponentBasic):
 
         return self._extract_img_data(r.content, r.encoding)
 
-    def are_requirements_satisfied(self, data):
-        return super().are_requirements_satisfied(data)
+    def are_requirements_satisfied(self, data: dict):
+        if data["image_score"] < self.config["min_score"]:
+            return False
+        return True
