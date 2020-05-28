@@ -116,7 +116,8 @@ class BaseComponent(Utils, metaclass=Singleton):
         requirements_missed = []
         for k, v in data_to_config_dict.items():
             if not self._validate_requirement(self.config[k], *v, data=data_dict):
-                if short_circut: return [k]
+                if short_circut:
+                    return [k]
                 requirements_missed.append(k)
         return requirements_missed
 
@@ -191,7 +192,8 @@ class BaseComponent(Utils, metaclass=Singleton):
             if mode == MatchMode.SUPER_INCLUDE:
                 for elements in standard_value:
                     for v_elements in value:
-                        if elements in v_elements: break
+                        if elements in v_elements:
+                            break
                     else:
                         return False
                 return True
@@ -199,17 +201,20 @@ class BaseComponent(Utils, metaclass=Singleton):
             if mode == MatchMode.SUPER_EXCLUDE:
                 for elements in standard_value:
                     for v_elements in value:
-                        if elements in v_elements: return False
+                        if elements in v_elements:
+                            return False
                 return True
 
             if mode == MatchMode.INCLUDE:
                 for elements in standard_value:
-                    if not (elements in value): return False
+                    if not (elements in value):
+                        return False
                 return True
 
             if mode == MatchMode.EXCLUDE:
                 for elements in standard_value:
-                    if (elements in value): return False
+                    if (elements in value):
+                        return False
                 return True
 
             # if mode == MATCH_MODE.EQUAL:
@@ -219,15 +224,16 @@ class BaseComponent(Utils, metaclass=Singleton):
     def init_math_eval_vars(self):
         self.math_eval_var["local"] = {"e": math.e, "pi": math.pi, "tau": math.tau, "i": cmath.sqrt(-1), "cos": math.cos, "sin": math.sin, "sqrt": cmath.sqrt}
 
-    def math_eval(self, expr, local_var={}, global_var={}):
-        if local_var or global_var:
-            loc = self.math_eval_var["local"].copy()
+    def math_eval(self, expr, local_var=None, global_var=None):
+        loc = self.math_eval_var["local"].copy()
+        if local_var:
             loc.update(local_var)
-            glb = self.math_eval_var["global"].copy()
-            glb.update(global_var)
-            return eval(expr, glb, loc)
 
-        return eval(expr, self.math_eval_var["global"], self.math_eval_var["local"])
+        glb = self.math_eval_var["global"].copy()
+        if global_var:
+            glb.update(global_var)
+
+        return eval(expr, glb, loc)
 
     @staticmethod
     def strict_type_check(var, t_type, v_name):
