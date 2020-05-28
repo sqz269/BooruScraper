@@ -57,6 +57,12 @@ class ComponentPixiv(ComponentBasic):
         self.url_as_referer = True
         # User-Agent Header will auto configure
 
+        try:
+            int(self.config["avg_bookmark_per_day"])
+        except ValueError:
+            # because we are using eval to calculate the math expression, which allows custom code to execute
+            self.logger.warning("Using a custom expression for avg_bookmark_per_day may have unintended side effects. Proceed with caution.")
+
     def generate_urls(self):  # TODO: Make tags_exclude_query actually work
         f_tags = self.config["tags_query"] + self.config["tags_exclude_query"]
         base_url_formatted = self.api_endpoint.format(f_tags=f_tags, **self.config.get_configuration())
@@ -183,9 +189,8 @@ class ComponentPixiv(ComponentBasic):
         return image_data
 
     def are_requirements_satisfied(self, data: dict):
-        # Very easy to hit rate limit
-        if not (self._calculate_avg_bookmark_per_day(data["image_date"], data["image_bookmarks"]) >=
-                self.config["avg_bookmark_per_day"]):
+        avg_booksmarks, days_passed = self._calculate_avg_bookmark_per_day(data["image_date"], data["image_bookmarks"])
+        if not (avg_booksmarks >= self.math_eval(self.config["avg_bookmark_per_day"], local_var={"t": days_passed})):
             self.logger.debug(f"Filter out {data['image_id']} due to insufficient avg bookmark perday: {int(self._calculate_avg_bookmark_per_day(data['image_date'], data['image_bookmarks']))}")
             return False
 
@@ -214,11 +219,11 @@ class ComponentPixiv(ComponentBasic):
 
     @staticmethod
     def _calculate_avg_bookmark_per_day(created_date: str, total_bookmark: int):
-        current_JST_time = time.time() + 32400  # 32400 is 9 hours which is the JST offset from CST (Central Daylight Time), That is assuming you are in CST
+        current_JST_time = time.time()  # possibility of timezone offsets
         upload_time = time_parse(created_date).timestamp()  # parse the ISO-8601 Formmatted string to Unix Epoch
         days_passed = (current_JST_time - upload_time) / 86400  # divide the difference between current time and upload time by a day
         bookmark_per_day = total_bookmark / days_passed
-        return bookmark_per_day
+        return (bookmark_per_day, days_passed)
 
     def exit(self, code=0):
         return super().exit_handler(code=code)
