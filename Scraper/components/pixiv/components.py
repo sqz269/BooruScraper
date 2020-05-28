@@ -1,6 +1,7 @@
 import json
 import operator
 import time
+from urllib.parse import quote_plus as url_quote
 
 import requests
 from bs4 import BeautifulSoup
@@ -65,6 +66,7 @@ class ComponentPixiv(ComponentBasic):
 
     def generate_urls(self):  # TODO: Make tags_exclude_query actually work
         f_tags = self.config["tags_query"] + self.config["tags_exclude_query"]
+        f_tags = url_quote(f_tags)
         base_url_formatted = self.api_endpoint.format(f_tags=f_tags, **self.config.get_configuration())
         base_url_with_pg_number = base_url_formatted + "&p={page}"
         list_of_urls = [(base_url_with_pg_number.format(page=i), i) for i in
@@ -191,7 +193,7 @@ class ComponentPixiv(ComponentBasic):
     def are_requirements_satisfied(self, data: dict):
         avg_booksmarks, days_passed = self._calculate_avg_bookmark_per_day(data["image_date"], data["image_bookmarks"])
         if not (avg_booksmarks >= self.math_eval(self.config["avg_bookmark_per_day"], local_var={"t": days_passed})):
-            self.logger.debug(f"Filter out {data['image_id']} due to insufficient avg bookmark perday: {int(self._calculate_avg_bookmark_per_day(data['image_date'], data['image_bookmarks']))}")
+            self.logger.debug(f"Filter out {data['image_id']} due to insufficient avg bookmark perday: {self.math_eval(self.config['avg_bookmark_per_day'], local_var={'t': days_passed})}")
             return False
 
         if not (data["image_views"] >= self.config["view_min"]):
