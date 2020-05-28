@@ -1,11 +1,13 @@
-from Scraper.libs.logger import init_logging
-from Scraper.libs.utils import Utils
-from Scraper.libs.cfgBuilder import ConfigurationBuilder
-from Scraper.libs.singleton import Singleton
-
+import cmath
+import math
 from logging import Logger
-
 from typing import Union
+
+from Scraper.libs.cfgBuilder import ConfigurationBuilder
+from Scraper.libs.logger import init_logging
+from Scraper.libs.singleton import Singleton
+from Scraper.libs.utils import Utils
+
 
 class MatchMode:
     INCLUDE = 0  # Matches element in each list using == operator (sv == v)
@@ -43,6 +45,8 @@ class BaseComponent(Utils, metaclass=Singleton):
         self.init_verbose = init_verbose
         self.config: ConfigurationBuilder = None
         self.logger: Logger = None
+
+        self.math_eval_var = {"local": {}, "global": {}}
 
         self.debug_print("[*] Initalizing basic components")
 
@@ -211,6 +215,17 @@ class BaseComponent(Utils, metaclass=Singleton):
             # if mode == MATCH_MODE.EQUAL:
 
         self.logger.warning(f"No Know Operation with type: {v_type}. Match Mode: {mode}")
+
+    def init_math_eval_vars(self):
+        self.math_eval_var["local"] = {"e": math.e, "pi": math.pi, "tau": math.tau, "i": cmath.sqrt(-1), "cos": math.cos, "sin": math.sin, "sqrt": cmath.sqrt}
+
+    def math_eval(self, expr, local_var={}, global_var={}):
+        if local_var and global_var:
+            loc = self.math_eval_var["local"].copy().update(local_var)
+            glb = self.math_eval_var["global"].copy().update(global_var)
+            return eval(expr, glb, loc)
+
+        return eval(expr, self.math_eval_var["global"], self.math_eval_var["local"])
 
     @staticmethod
     def strict_type_check(var, t_type, v_name):
