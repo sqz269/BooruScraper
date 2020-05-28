@@ -220,9 +220,11 @@ class BaseComponent(Utils, metaclass=Singleton):
         self.math_eval_var["local"] = {"e": math.e, "pi": math.pi, "tau": math.tau, "i": cmath.sqrt(-1), "cos": math.cos, "sin": math.sin, "sqrt": cmath.sqrt}
 
     def math_eval(self, expr, local_var={}, global_var={}):
-        if local_var and global_var:
-            loc = self.math_eval_var["local"].copy().update(local_var)
-            glb = self.math_eval_var["global"].copy().update(global_var)
+        if local_var or global_var:
+            loc = self.math_eval_var["local"].copy()
+            loc.update(local_var)
+            glb = self.math_eval_var["global"].copy()
+            glb.update(global_var)
             return eval(expr, glb, loc)
 
         return eval(expr, self.math_eval_var["global"], self.math_eval_var["local"])
