@@ -1,7 +1,10 @@
+import os
+
 from PyQt5 import QtCore, QtGui, QtWidgets
-from UserInterface.Ui_Scripts.pixiv_window import Ui_PixivConfigurationWindow
+
 from UserInterface.libs.i_config_window_handler import IConfigWindowHandler
 from UserInterface.libs.ui_config_assist import UI_TYPE, UiConfigurationHelper
+from UserInterface.Ui_Scripts.pixiv_window import Ui_PixivConfigurationWindow
 
 
 class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindowHandler):
@@ -20,10 +23,10 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
             ["SEARCH_MODE",             self.pixiv_search_mode,         UI_TYPE.DROPDOWN],
             ["SUBMISSION_TYPE",         self.pixiv_submission_type,     UI_TYPE.DROPDOWN],
             ["RATING",                  self.pixiv_rating,              UI_TYPE.DROPDOWN],
-            ["HEIGHT_MIN",              self.pixiv_query_min_height,    UI_TYPE.TEXT_INPUT],
-            ["WIDTH_MIN",               self.pixiv_query_min_width,     UI_TYPE.TEXT_INPUT],
-            ["HEIGHT_MAX",              self.pixiv_query_max_height,    UI_TYPE.TEXT_INPUT],
-            ["WIDTH_MAX",               self.pixiv_query_max_width,     UI_TYPE.TEXT_INPUT],
+            ["HEIGHT_MIN",              self.pixiv_query_min_height,    UI_TYPE.SPIN_BOX],
+            ["WIDTH_MIN",               self.pixiv_query_min_width,     UI_TYPE.SPIN_BOX],
+            ["HEIGHT_MAX",              self.pixiv_query_max_height,    UI_TYPE.SPIN_BOX],
+            ["WIDTH_MAX",               self.pixiv_query_max_width,     UI_TYPE.SPIN_BOX],
             ["ORIENTATION",             self.pixiv_query_orientation,   UI_TYPE.TEXT_INPUT],
 
             # Because tags_query_exclude doesn't work so it's just a temp work around
@@ -32,7 +35,7 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
             ["BOOKMARK_MIN",            self.pixiv_min_bookmark,        UI_TYPE.SPIN_BOX],
             # Make following spin box
             ["AVG_VIEW_PER_DAY",        self.pixiv_avg_view_per_day,    UI_TYPE.TEXT_INPUT],
-            ["VIEW_BOOKMARK_RATIO",     self.pixiv_view_bookmark_ratio, UI_TYPE.TEXT_INPUT],
+            ["VIEW_BOOKMARK_RATIO",     self.pixiv_view_bookmark_ratio, UI_TYPE.SPIN_BOX],
             ["AVG_BOOKMARK_PER_DAY",    self.pixiv_avg_bookmark_per_day,UI_TYPE.TEXT_INPUT],
             ["USER_EXCLUDE",            self.pixiv_user_exclude,        UI_TYPE.TEXT_INPUT],
             ["IGNORE_BOOKMARKED",       self.pixiv_ignore_bookmarked,   UI_TYPE.CHECK_BOX],
@@ -68,9 +71,37 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
             # not implemented in UI, because im LAZY
             ["TOOL",                    "",                             UI_TYPE.VALUE],
             ["TAGS_BYPASS",             "",                             UI_TYPE.VALUE],
-            ["NON_QUERY_TAG_MATCH_MODE","absolute",                     UI_TYPE.VALUE]
-
+            ["NON_QUERY_TAG_MATCH_MODE","absolute",                     UI_TYPE.VALUE],
+            ["VIEW_BOOKMARK_RATIO_BYPASS", 9999999,                     UI_TYPE.VALUE],
+            ["TITLE_INCLUDE",           "",                             UI_TYPE.VALUE],
+            ["TITLE_EXCLUDE",           "",                             UI_TYPE.VALUE],
+            ["USER_INCLUDE",            "",                             UI_TYPE.VALUE],
+            ["DESCRIPTION_EXCLUDE",     "",                             UI_TYPE.VALUE]
         ]
+
+        self.COMBO_BOX_SETTING_NAME_TO_INDEX = {
+            "SEARCH_MODE": {"s_tag_full": 0,
+                            "s_tag": 1,
+                            "s_tc": 2},
+
+            "SUBMISSION_TYPE": {"all": 0,
+                                "illust_and_ugoira": 1,
+                                "illust": 2,
+                                "manga": 3,
+                                "ugoira": 4},
+
+            "RATING":  {"all": 0,
+                        "safe": 1,
+                        "r18": 2},
+
+            "SORTED_BY": {"date_d": 0,
+                          "date": 1},
+
+            "IMAGE_SIZE": {"original": 0,
+                           "large": 1,
+                           "medium": 2,
+                           "square_medium": 3}
+        }
 
     def bind_elements(self):
         self.pixiv_query_tags_browse.clicked.connect(lambda: UiConfigurationHelper.browse_file_fmt(self.pixiv_query_tags))
@@ -78,11 +109,21 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
         self.pixiv_user_exclude_browse.clicked.connect(lambda: UiConfigurationHelper.browse_file_fmt(self.pixiv_user_exclude))
         self.pixiv_output_folder_browse.clicked.connect(lambda: UiConfigurationHelper.browse_dir(self.pixiv_output_folder))
 
+        self.pixiv_action_load_config.triggered.connect(self.load_config)
+
     def show_config(self):
         self._window.show()
 
-    def load_config(self):
-        return super().load_config()
+    def load_config(self, config_dir=None):
+        ini_path = None
+        if config_dir:
+            ini_path = os.path.join(config_dir, "pixiv.ini") # we guess the name
+        else:
+            ini_path = UiConfigurationHelper.browse_file()[0]
+
+        cfg_dict = UiConfigurationHelper.parse_ini_config(ini_path)
+
+        UiConfigurationHelper.load_config(cfg_dict, self.UI_CONFIG_NAME_TO_NORMAL_NAME, self.COMBO_BOX_SETTING_NAME_TO_INDEX)
 
     def save_config(self):
         return super().save_config()
