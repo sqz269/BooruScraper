@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>658</width>
+    <width>678</width>
     <height>764</height>
    </rect>
   </property>
@@ -37,9 +37,6 @@
           <string>Average Bookmark/Day</string>
          </property>
         </widget>
-       </item>
-       <item row="0" column="2" colspan="2">
-        <widget class="QDoubleSpinBox" name="pixiv_min_view"/>
        </item>
        <item row="1" column="1">
         <widget class="QLabel" name="pixiv_min_bookmark_l">
@@ -88,9 +85,6 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="2" colspan="2">
-        <widget class="QDoubleSpinBox" name="pixiv_min_bookmark"/>
-       </item>
        <item row="0" column="1">
         <widget class="QLabel" name="pixiv_min_view_l">
          <property name="text">
@@ -136,6 +130,20 @@
        </item>
        <item row="4" column="2" colspan="2">
         <widget class="QLineEdit" name="pixiv_avg_view_per_day"/>
+       </item>
+       <item row="0" column="2" colspan="2">
+        <widget class="QSpinBox" name="pixiv_min_view">
+         <property name="maximum">
+          <number>100000</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2" colspan="2">
+        <widget class="QSpinBox" name="pixiv_min_bookmark">
+         <property name="maximum">
+          <number>100000</number>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -844,7 +852,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>658</width>
+     <width>678</width>
      <height>21</height>
     </rect>
    </property>
@@ -852,8 +860,8 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionLoad_Configuration"/>
-    <addaction name="actionSave_Configuration"/>
+    <addaction name="pixiv_action_load_config"/>
+    <addaction name="pixiv_action_save_config"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
@@ -887,12 +895,12 @@
     <string>Pixiv Fast</string>
    </property>
   </action>
-  <action name="actionLoad_Configuration">
+  <action name="pixiv_action_load_config">
    <property name="text">
     <string>Load Configuration</string>
    </property>
   </action>
-  <action name="actionSave_Configuration">
+  <action name="pixiv_action_save_config">
    <property name="text">
     <string>Save Configuration</string>
    </property>
