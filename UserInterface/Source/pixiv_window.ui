@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>622</width>
+    <width>668</width>
     <height>705</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Pixiv Configuration</string>
   </property>
   <widget class="QWidget" name="pixiv_central">
    <layout class="QGridLayout" name="gridLayout_8">
@@ -676,7 +676,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>622</width>
+     <width>668</width>
      <height>21</height>
     </rect>
    </property>
