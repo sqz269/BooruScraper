@@ -211,7 +211,7 @@ class Ui_ModuleSelectionWindow(object):
         self.menubar.addAction(self.menuAbout.menuAction())
 
         self.retranslateUi(ModuleSelectionWindow)
-        self.module_selection_tab.setCurrentIndex(3)
+        self.module_selection_tab.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(ModuleSelectionWindow)
 
     def retranslateUi(self, ModuleSelectionWindow):

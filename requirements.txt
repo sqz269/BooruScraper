@@ -8,3 +8,5 @@ parse  # for reverse formatting
 python-dateutil
 
 PixivPy
+
+pyqt5 # Only required if you wanna use the gui, main_graphical.py
