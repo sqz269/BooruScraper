@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_ModuleSelectionWindow(object):
     def setupUi(self, ModuleSelectionWindow):
         ModuleSelectionWindow.setObjectName("ModuleSelectionWindow")
-        ModuleSelectionWindow.resize(338, 373)
+        ModuleSelectionWindow.resize(274, 340)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -199,16 +199,9 @@ class Ui_ModuleSelectionWindow(object):
         self.gridLayout.addWidget(self.configuration_dir_l, 0, 0, 1, 1)
         self.verticalLayout.addWidget(self.configuration_group)
         ModuleSelectionWindow.setCentralWidget(self.module_selection)
-        self.menubar = QtWidgets.QMenuBar(ModuleSelectionWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 338, 21))
-        self.menubar.setObjectName("menubar")
-        self.menuAbout = QtWidgets.QMenu(self.menubar)
-        self.menuAbout.setObjectName("menuAbout")
-        ModuleSelectionWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(ModuleSelectionWindow)
         self.statusbar.setObjectName("statusbar")
         ModuleSelectionWindow.setStatusBar(self.statusbar)
-        self.menubar.addAction(self.menuAbout.menuAction())
 
         self.retranslateUi(ModuleSelectionWindow)
         self.module_selection_tab.setCurrentIndex(0)
@@ -255,8 +248,7 @@ class Ui_ModuleSelectionWindow(object):
         self.module_selection_tab.setTabText(self.module_selection_tab.indexOf(self.tab_gelbooru), _translate("ModuleSelectionWindow", "Gelbooru"))
         self.configuration_group.setTitle(_translate("ModuleSelectionWindow", "Configuration"))
         self.configuration_dir_browse.setText(_translate("ModuleSelectionWindow", "Browse"))
-        self.configuration_dir_l.setText(_translate("ModuleSelectionWindow", "Configuration Directory"))
-        self.menuAbout.setTitle(_translate("ModuleSelectionWindow", "About"))
+        self.configuration_dir_l.setText(_translate("ModuleSelectionWindow", "Config Folder"))
 
 
 if __name__ == "__main__":
