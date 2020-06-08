@@ -1,8 +1,10 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from UserInterface.Ui_Scripts.module_selection import Ui_ModuleSelectionWindow
-from UserInterface.libs.ui_config_assist import UiConfigurationHelper
 
-from UserInterface.Ui_Handler.pixiv_handler import PixivConfigurationWindowHandler
+from UserInterface.libs.ui_config_assist import UiConfigurationHelper
+from UserInterface.Ui_Handler.pixiv_handler import \
+    PixivConfigurationWindowHandler
+from UserInterface.Ui_Scripts.module_selection import Ui_ModuleSelectionWindow
+
 
 class ModuleSelectionWindowHandler(Ui_ModuleSelectionWindow):
 
