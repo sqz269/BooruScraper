@@ -1,0 +1,724 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PixivConfigurationWindow</class>
+ <widget class="QMainWindow" name="PixivConfigurationWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>622</width>
+    <height>705</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="pixiv_central">
+   <layout class="QGridLayout" name="gridLayout_8">
+    <item row="1" column="2">
+     <widget class="QGroupBox" name="pixiv_config_group_advanced">
+      <property name="title">
+       <string>ADVANCED</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="1" column="0">
+        <widget class="QLabel" name="pixiv_download_delay_l">
+         <property name="text">
+          <string>Download Delay</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="pixiv_user_agent_l">
+         <property name="text">
+          <string>Request User Agent</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QSpinBox" name="pixiv_max_concurrent_thread"/>
+       </item>
+       <item row="3" column="1">
+        <widget class="QSpinBox" name="pixiv_read_image_info_delay"/>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="pixiv_collect_data_only_l">
+         <property name="text">
+          <string>Collect Data Only</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QCheckBox" name="pixiv_collect_data_only">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QSpinBox" name="pixiv_download_delay"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="pixiv_start_delay_l">
+         <property name="text">
+          <string>Start Delay</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="pixiv_max_concurrent_thread_l">
+         <property name="text">
+          <string>Max Concurrent Thread</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="pixiv_read_image_info_delay_l">
+         <property name="text">
+          <string>Read Image Info Delay</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QSpinBox" name="pixiv_start_delay"/>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLineEdit" name="pixiv_user_agent"/>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="pixiv_flush_csv_imminently_l">
+         <property name="text">
+          <string>Flush CSV Imminently</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QCheckBox" name="pixiv_flush_csv_imminently">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QGroupBox" name="pixiv_config_group_requirements">
+      <property name="title">
+       <string>REQUIREMENTS</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="1" column="1">
+        <widget class="QLabel" name="pixiv_min_bookmark_l">
+         <property name="text">
+          <string>Minimum Bookmark</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="3">
+        <widget class="QPushButton" name="pixiv_user_exclude_browse">
+         <property name="text">
+          <string>Browse File</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2" colspan="2">
+        <widget class="QLineEdit" name="pixiv_avg_view_per_day"/>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="pixiv_view_bookmark_ratio_l">
+         <property name="text">
+          <string>View/Bookmark Ratio</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="pixiv_avg_view_per_day_l">
+         <property name="text">
+          <string>Average View/Day</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2" colspan="2">
+        <widget class="QLineEdit" name="pixiv_view_bookmark_ratio"/>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="pixiv_min_view_l">
+         <property name="text">
+          <string>Minimum View</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLabel" name="pixiv_user_exclude_l">
+         <property name="text">
+          <string>User Exclude</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2" colspan="2">
+        <widget class="QLineEdit" name="pixiv_avg_bookmark_per_day"/>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLabel" name="pixiv_avg_bookmark_per_day_l">
+         <property name="text">
+          <string>Average Bookmark/Day</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="2">
+        <widget class="QLineEdit" name="pixiv_user_exclude"/>
+       </item>
+       <item row="6" column="1">
+        <widget class="QLabel" name="pixiv_ignore_bookmarked_l">
+         <property name="text">
+          <string>Ignore bookmarked</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="2" colspan="2">
+        <widget class="QCheckBox" name="pixiv_ignore_bookmarked">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2" colspan="2">
+        <widget class="QDoubleSpinBox" name="pixiv_min_view"/>
+       </item>
+       <item row="1" column="2" colspan="2">
+        <widget class="QDoubleSpinBox" name="pixiv_min_bookmark"/>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QGroupBox" name="pixiv_config_group_query">
+      <property name="title">
+       <string>QUERY</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="2" column="0">
+        <widget class="QLabel" name="pixiv_search_mode_l">
+         <property name="text">
+          <string>Search Mode</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1" colspan="2">
+        <widget class="QComboBox" name="pixiv_submission_type">
+         <item>
+          <property name="text">
+           <string>All</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Illustration &amp; Ugoira</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Illustration</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Manga</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Ugoira</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="pixiv_query_tags_exclude_l">
+         <property name="text">
+          <string>Tags Exclude</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="pixiv_rating_l">
+         <property name="text">
+          <string>Rating</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QPushButton" name="pixiv_query_tags_exclude_browse">
+         <property name="text">
+          <string>Browse File</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="pixiv_query_tags_l">
+         <property name="text">
+          <string>Tags</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1" colspan="2">
+        <widget class="QComboBox" name="pixiv_search_mode">
+         <property name="editable">
+          <bool>false</bool>
+         </property>
+         <property name="currentText">
+          <string>Tags: Exact Match</string>
+         </property>
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <property name="modelColumn">
+          <number>0</number>
+         </property>
+         <item>
+          <property name="text">
+           <string>Tags: Exact Match</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Tags: Partially Match</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Match All (Tags, Description, Title)</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="pixiv_query_tags_browse">
+         <property name="text">
+          <string>Browse File</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="pixiv_query_tags_exclude"/>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="pixiv_query_tags">
+         <property name="toolTipDuration">
+          <number>-1</number>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="pixiv_submission_type_l">
+         <property name="text">
+          <string>Submission Type</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1" colspan="2">
+        <widget class="QComboBox" name="pixiv_rating">
+         <item>
+          <property name="text">
+           <string>All</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Safe</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>R-18</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="pixiv_min_height_width_l">
+         <property name="text">
+          <string>Minimal Height/Width</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="pixiv_max_heigh_width_l">
+         <property name="text">
+          <string>Maxiumn Height/Width</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1" colspan="2">
+        <widget class="QLineEdit" name="pixiv_max_heigh_width"/>
+       </item>
+       <item row="5" column="1" colspan="2">
+        <widget class="QLineEdit" name="pixiv_min_height_width"/>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QGroupBox" name="pixiv_config_group_range_auth">
+      <property name="title">
+       <string>RANGE AND AUTHORIZATION</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="6" column="1">
+        <widget class="QLineEdit" name="pixiv_phpsessid"/>
+       </item>
+       <item row="2" column="1">
+        <widget class="QCheckBox" name="pixiv_reverse_generated_url">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QDateEdit" name="pixiv_submission_after"/>
+       </item>
+       <item row="1" column="1">
+        <widget class="QSpinBox" name="pixiv_end_page"/>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="pixiv_phpsessid_l">
+         <property name="text">
+          <string>PHPSESSID</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QSpinBox" name="pixiv_start_page"/>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="pixiv_submission_sort_by_l">
+         <property name="text">
+          <string>Submission Sorted by</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QDateEdit" name="pixiv_submission_before"/>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="pixiv_submission_before_l">
+         <property name="text">
+          <string>Submission Before</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="pixiv_start_page_l">
+         <property name="text">
+          <string>Start Page</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QComboBox" name="pixiv_submission_sort_by">
+         <item>
+          <property name="text">
+           <string>Newest First</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Oldest First</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="pixiv_submission_after_l">
+         <property name="text">
+          <string>Submission After</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="pixiv_end_page_l">
+         <property name="text">
+          <string>End Page</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="pixiv_reverse_generated_url_l">
+         <property name="text">
+          <string>Reverse Generated URL</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="2" column="2">
+     <widget class="QGroupBox" name="pixiv_config_group_operation_status">
+      <property name="title">
+       <string>Operation And Status</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QGroupBox" name="pixiv_group_operation">
+         <property name="title">
+          <string>Operation</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QPushButton" name="pixiv_operation_start">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Start</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pixiv_operation_terminate">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Terminate</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="pixiv_group_status">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>Status</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_7">
+          <item row="0" column="0">
+           <widget class="QLabel" name="pixiv_scraper_status_l">
+            <property name="text">
+             <string>Scraping Status:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="pixiv_scraper_status">
+            <property name="text">
+             <string>STOPPED</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" colspan="2">
+           <widget class="QPushButton" name="pixiv_view_status_detail">
+            <property name="text">
+             <string>View Details</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="2">
+           <widget class="QProgressBar" name="pixiv_scraper_progress">
+            <property name="value">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QGroupBox" name="pixiv_config_group_output">
+      <property name="title">
+       <string>OUTPUT</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_6">
+       <item row="5" column="0">
+        <widget class="QLabel" name="pixiv_csv_entry_string_l">
+         <property name="text">
+          <string>CSV Entry String</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="pixiv_use_submission_specific_dir_l">
+         <property name="text">
+          <string>Use Submission Speicifc Dir</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="pixiv_image_size_l">
+         <property name="text">
+          <string>Image Size</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1" colspan="2">
+        <widget class="QLineEdit" name="pixiv_master_directory_string"/>
+       </item>
+       <item row="4" column="1" colspan="2">
+        <widget class="QLineEdit" name="pixiv_file_name_string"/>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="pixiv_output_folder"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="pixiv_output_folder_l">
+         <property name="text">
+          <string>Output Folder</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QPushButton" name="pixiv_output_folder_browse">
+         <property name="text">
+          <string>Browse Dir</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1" colspan="2">
+        <widget class="QComboBox" name="pixiv_image_size">
+         <item>
+          <property name="text">
+           <string>Original</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Large</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Medium</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Square Medium</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="pixiv_file_name_string_l">
+         <property name="text">
+          <string>File Name String</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1" colspan="2">
+        <widget class="QLineEdit" name="pixiv_csv_entry_string"/>
+       </item>
+       <item row="1" column="1" colspan="2">
+        <widget class="QCheckBox" name="pixiv_use_submission_specific_dir">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="pixiv_master_directory_string_l">
+         <property name="text">
+          <string>Master Directory String</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="pixiv_merge_files_l">
+         <property name="text">
+          <string>Merge Files (After Completion)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="pixiv_merge_files_keep_copy_l">
+         <property name="text">
+          <string>Merge Files Keep Copy</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1" colspan="2">
+        <widget class="QCheckBox" name="pixiv_merge_files_keep_copy">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1" colspan="2">
+        <widget class="QCheckBox" name="pixiv_merge_files">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>622</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionDanbooru"/>
+    <addaction name="actionGelbooru"/>
+    <addaction name="actionPixiv"/>
+    <addaction name="actionPixiv_Fast"/>
+   </widget>
+   <widget class="QMenu" name="menuInfo">
+    <property name="title">
+     <string>About</string>
+    </property>
+   </widget>
+   <addaction name="menuHelp"/>
+   <addaction name="menuInfo"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionDanbooru">
+   <property name="text">
+    <string>Danbooru</string>
+   </property>
+  </action>
+  <action name="actionGelbooru">
+   <property name="text">
+    <string>Gelbooru</string>
+   </property>
+  </action>
+  <action name="actionPixiv">
+   <property name="text">
+    <string>Pixiv</string>
+   </property>
+  </action>
+  <action name="actionPixiv_Fast">
+   <property name="text">
+    <string>Pixiv Fast</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
