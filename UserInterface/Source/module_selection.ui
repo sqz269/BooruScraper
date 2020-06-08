@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>338</width>
-    <height>373</height>
+    <width>274</width>
+    <height>340</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -24,7 +24,7 @@
     <item>
      <widget class="QTabWidget" name="module_selection_tab">
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_pixiv">
        <attribute name="title">
@@ -345,7 +345,7 @@
        <item row="0" column="0">
         <widget class="QLabel" name="configuration_dir_l">
          <property name="text">
-          <string>Configuration Directory</string>
+          <string>Config Folder</string>
          </property>
         </widget>
        </item>
@@ -353,22 +353,6 @@
      </widget>
     </item>
    </layout>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>338</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuAbout">
-    <property name="title">
-     <string>About</string>
-    </property>
-   </widget>
-   <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
