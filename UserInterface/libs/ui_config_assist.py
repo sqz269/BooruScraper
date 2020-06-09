@@ -81,9 +81,10 @@ class UiConfigurationHelper:
         pass
 
     @staticmethod
-    def browse_dir(change_var) -> str:
+    def browse_dir(change_var=None) -> str:
         dst = QtWidgets.QFileDialog.getExistingDirectory()
-        change_var.setText(dst)
+        if change_var:
+            change_var.setText(dst)
         return dst
 
     @staticmethod
@@ -97,7 +98,7 @@ class UiConfigurationHelper:
     @staticmethod
     def browse_file(change_var=None) -> str:
         dst = QtWidgets.QFileDialog.getOpenFileName()
-        if (change_var):
+        if change_var:
             change_var.setText(dst)
         return dst
 

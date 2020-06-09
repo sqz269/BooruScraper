@@ -1,10 +1,15 @@
 import os
+from multiprocessing import Process
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from Scraper import ComponentPixiv
+from Scraper.framework.framework import init_scraper_base
 from UserInterface.libs.i_config_window_handler import IConfigWindowHandler
+from UserInterface.Ui_Handler.status_window_handler import StatusWindowHandler
 from UserInterface.libs.ui_config_assist import UI_TYPE, UiConfigurationHelper
 from UserInterface.Ui_Scripts.pixiv_window import Ui_PixivConfigurationWindow
+from UserInterface.libs.custom_logger import UiLogger
 
 
 class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindowHandler):
@@ -14,7 +19,19 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
         self._window = QtWidgets.QMainWindow()
         self.setupUi(self._window)
 
+        self._status_window: StatusWindowHandler = StatusWindowHandler("Pixiv Status")
+
         self.bind_elements()
+
+        self.UI_CONFIG_NAME_TO_NORMAL_NAME = None
+        self.COMBO_BOX_SETTING_NAME_TO_INDEX = None
+        self.init_config_vars()
+
+        self.config_file_path = None
+
+        self._active_scraping_process: Process = None
+
+    def init_config_vars(self):
 
         self.UI_CONFIG_NAME_TO_NORMAL_NAME = [
         #   Original name,              Variable name,                  Type
@@ -76,7 +93,9 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
             ["TITLE_INCLUDE",           "",                             UI_TYPE.VALUE],
             ["TITLE_EXCLUDE",           "",                             UI_TYPE.VALUE],
             ["USER_INCLUDE",            "",                             UI_TYPE.VALUE],
-            ["DESCRIPTION_EXCLUDE",     "",                             UI_TYPE.VALUE]
+            ["DESCRIPTION_EXCLUDE",     "",                             UI_TYPE.VALUE],
+            ["COMPRESS",                False,                          UI_TYPE.VALUE],
+            # ["LOGGER_FILE",             ]
         ]
 
         self.COMBO_BOX_SETTING_NAME_TO_INDEX = {
@@ -104,12 +123,24 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
         }
 
     def bind_elements(self):
-        self.pixiv_query_tags_browse.clicked.connect(lambda: UiConfigurationHelper.browse_file_fmt(self.pixiv_query_tags))
-        self.pixiv_query_tags_exclude_browse.clicked.connect(lambda: UiConfigurationHelper.browse_file_fmt(self.pixiv_query_tags_exclude))
-        self.pixiv_user_exclude_browse.clicked.connect(lambda: UiConfigurationHelper.browse_file_fmt(self.pixiv_user_exclude))
-        self.pixiv_output_folder_browse.clicked.connect(lambda: UiConfigurationHelper.browse_dir(self.pixiv_output_folder))
+        self.pixiv_query_tags_browse.clicked.connect(
+            lambda: UiConfigurationHelper.browse_file_fmt(self.pixiv_query_tags))
+
+        self.pixiv_query_tags_exclude_browse.clicked.connect(
+            lambda: UiConfigurationHelper.browse_file_fmt(self.pixiv_query_tags_exclude))
+
+        self.pixiv_user_exclude_browse.clicked.connect(
+            lambda: UiConfigurationHelper.browse_file_fmt(self.pixiv_user_exclude))
+
+        self.pixiv_output_folder_browse.clicked.connect(
+            lambda: UiConfigurationHelper.browse_dir(self.pixiv_output_folder))
+
+        self.pixiv_view_status_detail.clicked.connect(self.show_status_window)
 
         self.pixiv_action_load_config.triggered.connect(self.load_config)
+
+    def show_status_window(self):
+        self._status_window.show_window()
 
     def show_config(self):
         self._window.show()
@@ -121,6 +152,9 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
         else:
             ini_path = UiConfigurationHelper.browse_file()[0]
 
+        if ini_path:
+            self.config_file_path = ini_path
+
         cfg_dict = UiConfigurationHelper.parse_ini_config(ini_path)
 
         UiConfigurationHelper.load_config(cfg_dict, self.UI_CONFIG_NAME_TO_NORMAL_NAME, self.COMBO_BOX_SETTING_NAME_TO_INDEX)
@@ -130,3 +164,15 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
 
     def dump_config(self):
         return UiConfigurationHelper.dump_config(self.UI_CONFIG_NAME_TO_NORMAL_NAME)
+
+    def start_scrape(self):
+        # Subprocess may be required
+        pixiv_scraper = init_scraper_base(ComponentPixiv)
+        pixiv_scraper.logger = UiLogger("Pixiv")  # Replace the logger, see custom_logger.py for details
+        pixiv_scraper.entry_point(pixiv_scraper) # Alias for pixiv_scraper.run() if entry_point is not overridden
+        self._active_scraping_process = Process(target=pixiv_scraper.entry_point, args=(pixiv_scraper, ))
+        self._active_scraping_process.start()
+
+    def terminate(self):
+        self._active_scraping_process.kill()
+        self._active_scraping_process = None

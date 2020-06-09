@@ -1,5 +1,8 @@
 class IConfigWindowHandler:
 
+    def show_status_window(self):
+        raise NotImplementedError("show_status_window is not implemented, please implement it")
+
     def show_config(self):
         """Show the config window. should be alias for window.show
         """
