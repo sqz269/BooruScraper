@@ -1,4 +1,5 @@
 import logging
+
 from colorama import init, Fore
 
 
@@ -19,8 +20,12 @@ def init_logging(level_stdout=logging.INFO, level_IO=logging.WARNING, name="scrp
     stream_handler = logging.StreamHandler()
     stream_handler.setLevel(level_stdout)
 
-    stream_handler.setFormatter(logging.Formatter('%(asctime)s | <%(name)s> [%(threadName)s] [%(levelname)s]: %(message)s', datefmt="%Y-%m-%d %H:%M:%S"))
-    file_handler.setFormatter(logging.Formatter('%(asctime)s | <%(name)s> [%(threadName)s] [%(levelname)s]: %(message)s', datefmt="%Y-%m-%d %H:%M:%S"))
+    stream_handler.setFormatter(
+        logging.Formatter('%(asctime)s | <%(name)s> [%(threadName)s] [%(levelname)s]: %(message)s',
+                          datefmt="%Y-%m-%d %H:%M:%S"))
+    file_handler.setFormatter(
+        logging.Formatter('%(asctime)s | <%(name)s> [%(threadName)s] [%(levelname)s]: %(message)s',
+                          datefmt="%Y-%m-%d %H:%M:%S"))
 
     server.addHandler(file_handler)
     server.addHandler(stream_handler)

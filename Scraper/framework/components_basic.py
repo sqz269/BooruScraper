@@ -1,6 +1,6 @@
-from Scraper.framework.base_component import BaseComponent
-
 from typing import List, Tuple
+
+from Scraper.framework.base_component import BaseComponent
 
 
 class ComponentBasic(BaseComponent):

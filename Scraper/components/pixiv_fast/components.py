@@ -1,4 +1,5 @@
 import time
+
 from dateutil.parser import parse as time_parse
 from pixivpy3.aapi import AppPixivAPI
 
@@ -123,6 +124,6 @@ class ComponentPixivFast(ComponentBasic):
         current_JST_time = time.time() + 32400  # 32400 is 9 hours which is the JST offset from CST (Central Daylight Time), That is assuming you are in CST
         upload_time = time_parse(created_date).timestamp()  # parse the ISO-8601 Formmatted string to Epoch
         days_passed = (
-                                  current_JST_time - upload_time) / 86400  # divide the difference between current time and upload time by a day
+                              current_JST_time - upload_time) / 86400  # divide the difference between current time and upload time by a day
         bookmark_per_day = total_bookmark / days_passed
         return bookmark_per_day
