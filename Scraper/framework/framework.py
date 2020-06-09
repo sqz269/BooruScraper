@@ -28,13 +28,8 @@ def init_scraper_base(SuperClass: ComponentBasic, *args, **kwargs):
 
             super().__init__(*args, **kwargs)
 
-        def run(self, urls: List[Tuple[str, int]]):
+        def run(self):
             """executes the scraper
-
-            Arguments:
-                urls {List[Tuple[str, int]]} -- the list of url to scrape, it should be containing a tuple
-                                                First element of tuple should be the actual URL
-                                                Second element should be the page the url corresponds to
             """
             self.logger.info("Preparing folders and files")
             self.initialize_file_and_directory()

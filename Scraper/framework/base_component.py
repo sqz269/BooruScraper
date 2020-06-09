@@ -221,5 +221,5 @@ class BaseComponent(Utils, metaclass=Singleton):
     def entry_point(scraper_framework_base):
         # THIS SHOULD BE OVERRIDDEN BY OTHER CLASSES
         scraper_framework_base.logger.warning("Function: \"entry_point(scraper_framework_base)\" was not overridden")
-        scraper_framework_base.run([])
+        scraper_framework_base.run()
         return 0
