@@ -5,7 +5,6 @@ from bs4 import BeautifulSoup
 
 from Scraper.framework.components_basic import ComponentBasic
 
-
 # TODO: Fix a problem where config {tags} used in master dir string
 # will be presented in the form of a list instead of expected string
 
@@ -24,8 +23,7 @@ class ComponentGelbooru(ComponentBasic):
 
         rating = ""
         if (self.config["rating"] and self.config["rating_exclude"]):
-            self.logger.warning(
-                "Both \"rating\" and \"rating_exclude\" are specified. but only one can exist. Using \"rating_exclude\"")
+            self.logger.warning("Both \"rating\" and \"rating_exclude\" are specified. but only one can exist. Using \"rating_exclude\"")
             rating = f"-rating:{self.config['rating_exclude']}"
         else:
             if (self.config["rating"]):
@@ -39,8 +37,7 @@ class ComponentGelbooru(ComponentBasic):
     def generate_urls(self):
         # Urls page number increment by 42 and that's because there is 42 image on a page
         tags = self._construct_query()
-        return [(self.BASE_URL.format(tag=tags, page=i * self.IMAGES_PER_PAGE), str(i)) for i in
-                range(self.config["start_page"], self.config["end_page"])]
+        return [(self.BASE_URL.format(tag=tags, page=i * self.IMAGES_PER_PAGE), str(i)) for i in range(self.config["start_page"], self.config["end_page"])]
 
     def _predict_highres_url(self, org_url: str, tags: str) -> str:
         video_kw = ["webm", "animated"]
@@ -68,8 +65,7 @@ class ComponentGelbooru(ComponentBasic):
             if r.status_code <= 400:
                 return (full_url, extension)
             self.logger.debug("Original image did not have file extension type: {}".format(extension))
-        self.logger.warning(
-            "Failed to find an applicable file extension for image with original url: {}. Ignoring".format(org_url))
+        self.logger.warning("Failed to find an applicable file extension for image with original url: {}. Ignoring".format(org_url))
         return ("", "")
 
     def _extract_img_data(self, web_data: bytes, encoding="utf-8") -> list:

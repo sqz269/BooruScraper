@@ -5,5 +5,4 @@ from Scraper.components.pixiv.components import ComponentPixiv
 # , "Yandere": ComponentYandere
 from Scraper.components.pixiv_fast.components import ComponentPixivFast
 
-AVAILABLE_MODULES = {"Pixiv": ComponentPixiv, "Pixiv Fast": ComponentPixivFast, "Danbooru": ComponentsDanbooru,
-                     "Gelbooru": ComponentGelbooru}
+AVAILABLE_MODULES = {"Pixiv": ComponentPixiv, "Pixiv Fast": ComponentPixivFast, "Danbooru": ComponentsDanbooru, "Gelbooru": ComponentGelbooru}

@@ -15,21 +15,20 @@ IMAGE_DATA_FIELD_TO_JSON_DATA_FIELD = {
 
     # image_tags
     # image_extension
-    "image_title": "title",
-    "image_type": "illustType",
-    "image_date": "createDate",
-    "image_uploader_id": "userId",
-    "image_uploader_name": "userName",
-    "image_width": "width",
-    "image_height": "height",
-    "image_page_count": "pageCount",
-    "image_bookmarks": "bookmarkCount",
-    "image_views": "viewCount",
-    "image_likes": "likeCount",
-    "image_comments": "commentCount",  # number of comments
-    "image_is_original": "isOriginal"
+    "image_title":          "title",
+    "image_type":           "illustType",
+    "image_date":           "createDate",
+    "image_uploader_id":    "userId",
+    "image_uploader_name":  "userName",
+    "image_width":          "width",
+    "image_height":         "height",
+    "image_page_count":     "pageCount",
+    "image_bookmarks":      "bookmarkCount",
+    "image_views":          "viewCount",
+    "image_likes":          "likeCount",
+    "image_comments":       "commentCount", # number of comments
+    "image_is_original":    "isOriginal"
 }
-
 
 class ComponentPixiv(ComponentBasic):
     api_endpoint = ("""
@@ -46,8 +45,7 @@ class ComponentPixiv(ComponentBasic):
                                                             &hgt={height_max}
                                                             &ratio={orientation}
                                                             &tool={tool}
-        """.replace(" ", "").replace("\n",
-                                     ""))  # Remove space and new lines because triple quote string will include those
+        """.replace(" ", "").replace("\n", ""))  # Remove space and new lines because triple quote string will include those
 
     artwork_view_url = "https://www.pixiv.net/artworks/{id}"
 
@@ -55,7 +53,7 @@ class ComponentPixiv(ComponentBasic):
 
     def __init__(self, init_verbose=True):
         super().__init__("pixiv.ini", init_verbose=init_verbose)
-        self.request_cookie = {"PHPSESSID": self.config["phpsessid"]}
+        self.request_cookie    = {"PHPSESSID": self.config["phpsessid"]}
         self.url_as_referer = True
         # User-Agent Header will auto configure
 
@@ -64,7 +62,7 @@ class ComponentPixiv(ComponentBasic):
         base_url_formatted = self.api_endpoint.format(f_tags=f_tags, **self.config.get_configuration())
         base_url_with_pg_number = base_url_formatted + "&p={page}"
         list_of_urls = [(base_url_with_pg_number.format(page=i), i) for i in
-                        range(self.config["start_page"], (self.config["end_page"] + 1))]
+                    range(self.config["start_page"], (self.config["end_page"] + 1))]
         return list_of_urls
 
     def process_page(self, url: str):
@@ -96,8 +94,7 @@ class ComponentPixiv(ComponentBasic):
             return False
 
         if self.config["ignore_bookmarked"] and not data["isBookmarkable"]:
-            self.logger.debug(
-                f"Filter out {data['id']} due to target is not bookmarkable, which probably because already bookmarked")
+            self.logger.debug(f"Filter out {data['id']} due to target is not bookmarkable, which probably because already bookmarked")
             return False
 
         # Check if user is not in our filtered list
@@ -169,14 +166,12 @@ class ComponentPixiv(ComponentBasic):
         image_data.update({"image_parent_link": self.artwork_view_url.format(id=image_data["image_id"])})
         # do some math calculation
         image_data.update({"image_avg_bookmark_perday":
-                               self._calculate_avg_bookmark_per_day(image_data["image_date"],
-                                                                    image_data["image_bookmarks"])})
+            self._calculate_avg_bookmark_per_day(image_data["image_date"], image_data["image_bookmarks"])})
 
         if image_data["image_bookmarks"] != 0:  # prevent 0 division error
             image_data.update({"image_view_bookmark_ratio":
-                                   (image_data["image_views"] / image_data["image_bookmarks"])})
-        else:
-            image_data["image_view_bookmark_ratio"] = 0
+                (image_data["image_views"] / image_data["image_bookmarks"])})
+        else: image_data["image_view_bookmark_ratio"] = 0
 
         extension = data["urls"][self.config["image_size"]].split(".")[-1]
         image_data.update({"image_extension": extension})
@@ -191,8 +186,7 @@ class ComponentPixiv(ComponentBasic):
         # Very easy to hit rate limit
         if not (self._calculate_avg_bookmark_per_day(data["image_date"], data["image_bookmarks"]) >=
                 self.config["avg_bookmark_per_day"]):
-            self.logger.debug(
-                f"Filter out {data['image_id']} due to insufficient avg bookmark perday: {int(self._calculate_avg_bookmark_per_day(data['image_date'], data['image_bookmarks']))}")
+            self.logger.debug(f"Filter out {data['image_id']} due to insufficient avg bookmark perday: {int(self._calculate_avg_bookmark_per_day(data['image_date'], data['image_bookmarks']))}")
             return False
 
         if not (data["image_views"] >= self.config["view_min"]):
@@ -222,8 +216,7 @@ class ComponentPixiv(ComponentBasic):
     def _calculate_avg_bookmark_per_day(created_date: str, total_bookmark: int):
         current_JST_time = time.time() + 32400  # 32400 is 9 hours which is the JST offset from CST (Central Daylight Time), That is assuming you are in CST
         upload_time = time_parse(created_date).timestamp()  # parse the ISO-8601 Formmatted string to Unix Epoch
-        days_passed = (
-                                  current_JST_time - upload_time) / 86400  # divide the difference between current time and upload time by a day
+        days_passed = (current_JST_time - upload_time) / 86400  # divide the difference between current time and upload time by a day
         bookmark_per_day = total_bookmark / days_passed
         return bookmark_per_day
 

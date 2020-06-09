@@ -1,11 +1,11 @@
-from logging import Logger
-from typing import Union
-
-from Scraper.libs.cfgBuilder import ConfigurationBuilder
 from Scraper.libs.logger import init_logging
-from Scraper.libs.singleton import Singleton
 from Scraper.libs.utils import Utils
+from Scraper.libs.cfgBuilder import ConfigurationBuilder
+from Scraper.libs.singleton import Singleton
 
+from logging import Logger
+
+from typing import Union
 
 class MatchMode:
     INCLUDE = 0  # Matches element in each list using == operator (sv == v)
@@ -170,8 +170,8 @@ class BaseComponent(Utils, metaclass=Singleton):
                 return False
 
             if (standard_value == "" or
-                    standard_value.lower() == "ignore" or
-                    standard_value.lower() == "none"):
+                standard_value.lower() == "ignore" or
+                standard_value.lower() == "none"):
                 return True
 
             return standard_value == value
