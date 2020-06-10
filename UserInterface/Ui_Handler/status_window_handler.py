@@ -1,7 +1,7 @@
 import os
+import tempfile
 
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QMessageBox
 
 from UserInterface.Ui_Scripts.status_window import Ui_StatusWindow
@@ -51,8 +51,35 @@ class StatusWindowHandler(Ui_StatusWindow):
     def bind_signals(self):
         self.ui_helper.log_event.connect(self.update_log_window)
 
-    def update_log_window(self, msg, e_count, e_type):
-        self.log_window.append(msg)
+    def export_log_emerg(self, last_msg: str, callstack: str) -> str:
+        """
+        Attempts to export the log before the program completely crashes due to an fatal error
+            This method should be called when an critical/fatal events is logged
+        """
+        # We need to determine a safe location to write the log file (Always writable) so we gonna use temp dir
+        tmp_file = tempfile.NamedTemporaryFile("wb", suffix=f"_emerg_export_{self.status_window_name}")
+        tmp_file.write(self._raw_message.encode("utf-8"))
+        tmp_file.write(f"\nFatal Error Message: {last_msg}".encode("utf-8"))
+        tmp_file.write(f"\nCallstack when program encountered fatal error: {callstack}".encode("utf-8"))
+        tmp_file_path = tmp_file.name
+        tmp_file.close()  # Won't actually save the file. TODO
+        return tmp_file_path
+
+    def update_log_window(self, msg, p_msg, e_count, e_type):  # We might need some locks here
+        """
+        Syncs UI with logged events
+
+        Args:
+            msg: The rich text message we are setting (directly to the log window with colors and stuff)
+            p_msg: The Pure text message we received (used to export logs without
+            e_count: The times this type of logging events has occurred (err, warn, info)
+            e_type: The type of logged events (error, warning, info)
+
+        Returns:
+
+        """
+        self.log_window.append(msg)  # IDK Do something to purify the
+        self._raw_message = self._raw_message + p_msg
         if e_type == "info":
             self.status_infos.setText(str(e_count))
         elif e_type == "warning":
