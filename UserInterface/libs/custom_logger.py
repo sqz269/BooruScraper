@@ -1,7 +1,8 @@
 import logging
 import threading
+import datetime
+import traceback
 from typing import Any, Optional, Dict
-from traceback import format_tb
 
 from UserInterface.Ui_Handler.status_window_handler import StatusWindowHandler
 from UserInterface.libs.log_window_update_helper import UiLoggingHelper
@@ -45,8 +46,6 @@ class UiLogger(logging.Logger):
         """
         super(UiLogger, self).__init__(name, logging.NOTSET)
 
-        self.ui_helper = UiLoggingHelper()
-
         self._status_window: StatusWindowHandler = status_window
 
         self._info_count = 0
@@ -54,14 +53,17 @@ class UiLogger(logging.Logger):
         self._error_count = 0
         self._counter_lock = threading.Lock()
 
+        self._exec_message_style = '<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; ' \
+                                   '-qt-block-indent:0; text-indent:0px;"><span style=" font-weight:600; ' \
+                                   'color:#aa0000;">{time} [EXCEPTION] </span><span style=" font-weight:600;">{message}\n{traceback}</span></p> '
         self._error_message_style = '<p style=" margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; '\
                                     '-qt-block-indent:0; text-indent:0px;"><span style=" color:#ff0000;">{time} [ERROR] ' \
                                     '</span><span style=" color:#000000;">{message}</span></p> '
         self._warning_message_style = '<p style=" margin-top:5px; margin-bottom:5px; margin-left:0px; ' \
                                       'margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" ' \
-                                      'color:#ffaa00;">{time} [WARNING]</span><span style=" color:#000000;">{message}</span></p>'
+                                      'color:#ffaa00;">{time} [WARNING] </span><span style=" color:#000000;">{message}</span></p>'
         self._info_message_style = '<p style=" margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; ' \
-                                   '-qt-block-indent:0; text-indent:0px;"><span style=" color:#0000ff;">{time} [INFO]'\
+                                   '-qt-block-indent:0; text-indent:0px;"><span style=" color:#0000ff;">{time} [INFO] '\
                                    '</span><span style=" color:#000000;">{message}</span></p></body></html> '
 
     @property
@@ -89,16 +91,20 @@ class UiLogger(logging.Logger):
         self._info_count += 1
         self._counter_lock.release()
 
-        fmt_msg = self._info_message_style.format(message=msg)
-
-        self.ui_helper.log_event.emit(fmt_msg)
+        fmt_msg = self._info_message_style.format(message=msg,
+                                                  time=datetime.datetime.now().time().replace(microsecond=0).isoformat())
+        self._status_window.ui_helper.log_event.emit(fmt_msg, self._info_count, 'info')
+        # self._status_window.ui_helper.log_event.emit(fmt_msg)
 
     def warning(self, msg, *args, **kwargs):
         self._counter_lock.acquire()
         self._warn_count += 1
         self._counter_lock.release()
 
-        fmt_msg = self._warning_message_style.format(message=msg)
+        fmt_msg = self._warning_message_style.format(message=msg,
+                                                     time=datetime.datetime.now().time().replace(microsecond=0).isoformat())
+        self._status_window.ui_helper.log_event.emit(fmt_msg, self._warn_count, 'warning')
+        # self._status_window.ui_helper.log_event.emit(fmt_msg)
 
     def error(self, msg: Any, *args: Any, exc_info=...,
               stack_info: bool = ..., stacklevel: int = ..., extra: Optional[Dict[str, Any]] = ...,
@@ -107,7 +113,11 @@ class UiLogger(logging.Logger):
         self._error_count += 1
         self._counter_lock.release()
 
-        fmt_msg = self._error_message_style.format(message=msg)
+        fmt_msg = self._error_message_style.format(message=msg,
+                                                   time=datetime.datetime.now().time().replace(microsecond=0).isoformat())
+
+        self._status_window.ui_helper.log_event.emit(fmt_msg, self._error_count, 'error')
+        # self._status_window.ui_helper.log_event.emit(fmt_msg)
 
     def exception(self, msg: Any, *args: Any, exc_info=...,
                   stack_info: bool = ..., stacklevel: int = ..., extra: Optional[Dict[str, Any]] = ...,
@@ -116,26 +126,18 @@ class UiLogger(logging.Logger):
         self._error_count += 1
         self._counter_lock.release()
 
-        exec_tb = format_tb()
-
-        QMessageBox(QMessageBox.Critical, f"{msg}", f"An Exception Occurred:\n{exec_tb}", QMessageBox.Ok)
+        fmt_msg = self._exec_message_style.format(message=msg,
+                                                  time=datetime.datetime.now().time().replace(microsecond=0).isoformat(),
+                                                  traceback=traceback.format_tb())
+        self._status_window.ui_helper.log_event.emit(fmt_msg, self._error_count, 'error')
 
     def critical(self, msg: Any, *args: Any, exc_info=...,
                  stack_info: bool = ..., stacklevel: int = ..., extra: Optional[Dict[str, Any]] = ...,
                  **kwargs: Any) -> None:
-        pass
+        call_stack = traceback.format_stack()
+        call_stack = "---------------------\n".join(call_stack[:call_stack.__len__() - 1])
+        QMessageBox.critical(None, f"{self._status_window.status_window_name}: FATAL ERROR",
+                             f"Fatal Error. The Application Must Exit\n{msg}\nCall stack:\n{call_stack}")
+        # raise SystemExit(1)
 
     fatal = critical
-
-    def append_message(self, msg):
-        pass
-
-if __name__ == "__main__":
-    # level does not matter
-    ul = UiLogger("Test", logging.NOTSET)
-    # None of the statement should be printing anything to the stdout
-    ul.critical("This is a CRITICAL level entry")
-    ul.error("This is a ERROR level entry")
-    ul.warning("This is a WARNING level entry")
-    ul.info("This is a INFO level entry")
-    ul.debug("This is a DEBUG level entry")

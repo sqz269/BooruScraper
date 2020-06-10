@@ -46,13 +46,16 @@ class StatusWindowHandler(Ui_StatusWindow):
     def bind_buttons(self):
         self.logs_clear_window.clicked.connect(self.clear_log_window)
         self.logs_export.clicked.connect(self.export_logs)
-        self.terminate_current_task.clicked.connect(self.debug_s_s)
+        # self.terminate_current_task.clicked.connect()
 
     def bind_signals(self):
         self.ui_helper.log_event.connect(self.update_log_window)
 
-    def update_log_window(self, msg):
+    def update_log_window(self, msg, e_count, e_type):
         self.log_window.append(msg)
-
-    def debug_s_s(self):
-        self.ui_helper.log_event.emit("Test")
+        if e_type == "info":
+            self.status_infos.setText(str(e_count))
+        elif e_type == "warning":
+            self.status_warnings.setText(str(e_count))
+        else:
+            self.status_errors.setText(str(e_count))
