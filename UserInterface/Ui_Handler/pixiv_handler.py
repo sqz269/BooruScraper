@@ -2,6 +2,7 @@ import os
 from multiprocessing import Process
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QMessageBox
 
 from Scraper import ComponentPixiv
 from Scraper.framework.framework import init_scraper_base
@@ -34,7 +35,7 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
     def init_config_vars(self):
 
         self.UI_CONFIG_NAME_TO_NORMAL_NAME = [
-        #   Original name,              Variable name,                  Type
+            #   Original name,              Variable name,                  Type
             ["TAGS_QUERY",              self.pixiv_query_tags,          UI_TYPE.TEXT_INPUT],
             ["TAGS_EXCLUDE_QUERY",      self.pixiv_query_tags_exclude,  UI_TYPE.TEXT_INPUT],
             ["SEARCH_MODE",             self.pixiv_search_mode,         UI_TYPE.DROPDOWN],
@@ -95,7 +96,11 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
             ["USER_INCLUDE",            "",                             UI_TYPE.VALUE],
             ["DESCRIPTION_EXCLUDE",     "",                             UI_TYPE.VALUE],
             ["COMPRESS",                False,                          UI_TYPE.VALUE],
-            # ["LOGGER_FILE",             ]
+
+            # Logger init params, we won't be using this: see libs/custom_logger.py for details
+            ["LOGGER_FILE",             0,                              UI_TYPE.VALUE],
+            ["LOGGER_STDOUT",           0,                              UI_TYPE.VALUE],
+            ["LOGGER_NAME",             "pixiv",                        UI_TYPE.VALUE]
         ]
 
         self.COMBO_BOX_SETTING_NAME_TO_INDEX = {
@@ -138,6 +143,7 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
         self.pixiv_view_status_detail.clicked.connect(self.show_status_window)
 
         self.pixiv_action_load_config.triggered.connect(self.load_config)
+        self.pixiv_action_save_config.triggered.connect(self.save_config)
 
     def show_status_window(self):
         self._status_window.show_window()
@@ -150,7 +156,7 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
         if config_dir:
             ini_path = os.path.join(config_dir, "pixiv.ini") # we guess the name
         else:
-            ini_path = UiConfigurationHelper.browse_file()[0]
+            ini_path = UiConfigurationHelper.browse_file()
 
         if ini_path:
             self.config_file_path = ini_path
@@ -160,10 +166,13 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
         UiConfigurationHelper.load_config(cfg_dict, self.UI_CONFIG_NAME_TO_NORMAL_NAME, self.COMBO_BOX_SETTING_NAME_TO_INDEX)
 
     def save_config(self):
-        return super().save_config()
+        dst = UiConfigurationHelper.browse_file()
+        if not dst:
+            return
 
-    def dump_config(self):
-        return UiConfigurationHelper.dump_config(self.UI_CONFIG_NAME_TO_NORMAL_NAME)
+        config = UiConfigurationHelper.dump_config(self.UI_CONFIG_NAME_TO_NORMAL_NAME, self.COMBO_BOX_SETTING_NAME_TO_INDEX)
+        UiConfigurationHelper.save_config(config, dst)
+        QMessageBox.information(self._window, "Success", f"Successfully exported current configuration to:\n{dst}")
 
     def start_scrape(self):
         # Subprocess may be required
