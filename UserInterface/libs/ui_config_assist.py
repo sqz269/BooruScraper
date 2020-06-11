@@ -1,7 +1,10 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import configparser
 
+from PyQt5.QtWidgets import QMessageBox
+
 from Scraper.libs.cfgBuilder import ConfigurationBuilder
+
 
 class UI_TYPE:
     TEXT_INPUT = 0
@@ -12,10 +15,11 @@ class UI_TYPE:
 
     VALUE = -1  # Use to assign a static value to the field, if it's not implemented by the UI
 
+
 class UiConfigurationHelper:
 
     @staticmethod
-    def dump_config(ui_name_to_normal_name: list) -> dict:
+    def dump_config(ui_name_to_normal_name: list, combo_box_config_to_index: dict) -> dict:
         data = {}
         for e in ui_name_to_normal_name:
             element_type = e[2]
@@ -32,7 +36,21 @@ class UiConfigurationHelper:
                 continue
 
             if element_type == UI_TYPE.DROPDOWN:
-                data.update({e[0]: e[1].currentText()})
+                setting_2_index = combo_box_config_to_index[e[0]]
+                current_ind = e[1].currentIndex()
+
+                normal_value = None
+                for k, v in setting_2_index.items():
+                    if v == current_ind:
+                        normal_value = k
+                        break
+                else:
+                    QMessageBox.critical(None, "Error", "Failed to dump configuration."\
+                                                        f"\nCannot find key associated with index {current_ind}"
+                                                        f"Configuration Name: {e[0]}")
+                    raise SystemExit(1)
+
+                data.update({e[0]: normal_value})
                 continue
 
             if element_type == UI_TYPE.DATE_INPUT:
@@ -46,7 +64,7 @@ class UiConfigurationHelper:
         return data
 
     @staticmethod
-    def load_config(source_config: dict, ui_name_to_normal_name: list, combox_cfg_name_to_index: dict) -> list:
+    def load_config(source_config: dict, ui_name_to_normal_name: list, combox_cfg_name_to_index: dict) -> None:
         for e in ui_name_to_normal_name:
             element_type = e[2]
             if element_type == UI_TYPE.TEXT_INPUT:
@@ -77,6 +95,13 @@ class UiConfigurationHelper:
                 continue
 
     @staticmethod
+    def save_config(config_dict: dict, config_path: str):
+        cfg_parser = configparser.ConfigParser()
+        cfg_parser["SCRAPER_CONFIGURATION"] = config_dict
+        with open(config_path, "w", encoding="utf-8") as file:
+            cfg_parser.write(file)
+
+    @staticmethod
     def set_combo_box_item(combo_box, original_name, readable_name_to_org_name):
         pass
 
@@ -89,15 +114,15 @@ class UiConfigurationHelper:
 
     @staticmethod
     def browse_file_fmt(change_var) -> str:
-        dst = QtWidgets.QFileDialog.getOpenFileName()
+        dst = QtWidgets.QFileDialog.getOpenFileName()[0]
         file_string = "file<{encoding}><{separator}>: {path}"
-        fs = file_string.format(encoding="utf-8", separator=",", path=dst[0])
+        fs = file_string.format(encoding="utf-8", separator=",", path=dst)
         change_var.setText(fs)
         return fs
 
     @staticmethod
     def browse_file(change_var=None) -> str:
-        dst = QtWidgets.QFileDialog.getOpenFileName()
+        dst = QtWidgets.QFileDialog.getOpenFileName()[0]
         if change_var:
             change_var.setText(dst)
         return dst
