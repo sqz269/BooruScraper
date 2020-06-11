@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'D:\PROG\AnimeScraper\UserInterface\Source\module_selection.ui'
+# Form implementation generated from reading ui file '.\module_selection.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.0
 #
@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_ModuleSelectionWindow(object):
     def setupUi(self, ModuleSelectionWindow):
         ModuleSelectionWindow.setObjectName("ModuleSelectionWindow")
-        ModuleSelectionWindow.resize(274, 340)
+        ModuleSelectionWindow.resize(296, 303)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -179,25 +179,6 @@ class Ui_ModuleSelectionWindow(object):
         self.verticalLayout_7.addWidget(self.gelbooru_status)
         self.module_selection_tab.addTab(self.tab_gelbooru, "")
         self.verticalLayout.addWidget(self.module_selection_tab)
-        self.configuration_group = QtWidgets.QGroupBox(self.module_selection)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.configuration_group.sizePolicy().hasHeightForWidth())
-        self.configuration_group.setSizePolicy(sizePolicy)
-        self.configuration_group.setObjectName("configuration_group")
-        self.gridLayout = QtWidgets.QGridLayout(self.configuration_group)
-        self.gridLayout.setObjectName("gridLayout")
-        self.configuration_dir = QtWidgets.QLineEdit(self.configuration_group)
-        self.configuration_dir.setObjectName("configuration_dir")
-        self.gridLayout.addWidget(self.configuration_dir, 0, 1, 1, 1)
-        self.configuration_dir_browse = QtWidgets.QPushButton(self.configuration_group)
-        self.configuration_dir_browse.setObjectName("configuration_dir_browse")
-        self.gridLayout.addWidget(self.configuration_dir_browse, 0, 2, 1, 1)
-        self.configuration_dir_l = QtWidgets.QLabel(self.configuration_group)
-        self.configuration_dir_l.setObjectName("configuration_dir_l")
-        self.gridLayout.addWidget(self.configuration_dir_l, 0, 0, 1, 1)
-        self.verticalLayout.addWidget(self.configuration_group)
         ModuleSelectionWindow.setCentralWidget(self.module_selection)
         self.statusbar = QtWidgets.QStatusBar(ModuleSelectionWindow)
         self.statusbar.setObjectName("statusbar")
@@ -246,16 +227,3 @@ class Ui_ModuleSelectionWindow(object):
         self.gelbooru_status_current.setText(_translate("ModuleSelectionWindow", "Stopped"))
         self.gelbooru_status_show_detail.setText(_translate("ModuleSelectionWindow", "View Details"))
         self.module_selection_tab.setTabText(self.module_selection_tab.indexOf(self.tab_gelbooru), _translate("ModuleSelectionWindow", "Gelbooru"))
-        self.configuration_group.setTitle(_translate("ModuleSelectionWindow", "Configuration"))
-        self.configuration_dir_browse.setText(_translate("ModuleSelectionWindow", "Browse"))
-        self.configuration_dir_l.setText(_translate("ModuleSelectionWindow", "Config Folder"))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    ModuleSelectionWindow = QtWidgets.QMainWindow()
-    ui = Ui_ModuleSelectionWindow()
-    ui.setupUi(ModuleSelectionWindow)
-    ModuleSelectionWindow.show()
-    sys.exit(app.exec_())

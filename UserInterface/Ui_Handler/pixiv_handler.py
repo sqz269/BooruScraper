@@ -152,14 +152,10 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
         self._window.show()
 
     def load_config(self, config_dir=None):
-        ini_path = None
-        if config_dir:
-            ini_path = os.path.join(config_dir, "pixiv.ini") # we guess the name
-        else:
-            ini_path = UiConfigurationHelper.browse_file()
+        ini_path = UiConfigurationHelper.browse_file()
 
-        if ini_path:
-            self.config_file_path = ini_path
+        if not ini_path:
+            return
 
         cfg_dict = UiConfigurationHelper.parse_ini_config(ini_path)
 

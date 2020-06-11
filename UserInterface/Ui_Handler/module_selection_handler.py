@@ -17,8 +17,6 @@ class ModuleSelectionWindowHandler(Ui_ModuleSelectionWindow):
         self.pixiv_config_window_handler = PixivConfigurationWindowHandler()
         self.bind_pixiv_elements()
 
-        self.configuration_dir_browse.clicked.connect(lambda: UiConfigurationHelper.browse_dir(self.configuration_dir))
-
     def bind_pixiv_elements(self):
         self.pixiv_config_show.clicked.connect(self.pixiv_config_window_handler.show_config)
         self.pixiv_config_load.clicked.connect(self.pixiv_config_window_handler.load_config)
