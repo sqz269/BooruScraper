@@ -92,7 +92,7 @@ def init_scraper_base(SuperClass: ComponentBasic, *args, **kwargs):
             except (KeyboardInterrupt):
                 self.logger.fatal("Ctrl+C Received. Terminating")
                 raise SystemExit(0)
-            except ProcessLookupError:
+            except Exception:
                 self.logger.exception("Unexpected exception occurred. Thread Will Exit.")
                 return
 
