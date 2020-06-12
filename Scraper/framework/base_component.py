@@ -28,7 +28,7 @@ class BaseComponent(Utils):
         "merge_file", "merge_file_keep_separate"
     ]
 
-    def __init__(self, config_path: str, load_config_from_abs_path=False, init_verbose=False):
+    def __init__(self, config_path: str = None, config_dict: dict = None, load_config_from_abs_path=False, init_verbose=False):
         """Performs Initialization for the most basic component required
 
         Arguments:
@@ -44,20 +44,23 @@ class BaseComponent(Utils):
         self.init_verbose = init_verbose
         self.config: ConfigurationBuilder = None
         self.logger: Logger = None
-
-        self.math_eval_var = {"local": {}, "global": {}}
-
-        self._debug_print("[*] Initalizing basic components")
-
-        self.init_config(config_path, load_config_from_abs_path)
-
-        self.init_logger()
-
-        self.logger.info("Basic Component Initialized")
-
         self.url_as_referer: bool = None
         self.request_header: dict = {}
         self.request_cookie: dict = {}
+        self.math_eval_var = {"local": {}, "global": {}}
+
+        self._debug_print("[*] Initalizing basic components")
+        if config_dict:
+            self.config = ConfigurationBuilder()
+            self.config.parse_cfg_from_dict(config_dict)
+            missing_configs = self.validate_basic_config_requirements()
+            if missing_configs:
+                raise
+        else:
+            self.init_config(config_path, load_config_from_abs_path)
+        self.init_logger()
+        self.logger.info("Basic Component Initialized")
+
         self.request_header.update({"User-Agent": self.config["user_agent"]})
 
         super().__init__(self.logger)
