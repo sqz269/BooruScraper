@@ -9,8 +9,11 @@ from Scraper.framework.i_components import IComponents
 class ComponentPixivFast(BaseComponent, IComponents):
     pixiv_submission_base_link = "https://www.pixiv.net/artworks/{id}"
 
-    def __init__(self, *args, **kwargs):
-        super().__init__("pixiv_fast.ini", init_verbose=True, *args, **kwargs)
+    def __init__(self,config_path: str = None, config_dict: dict = None, load_config_from_abs_path=False, init_verbose=False):
+        if config_dict or config_path:
+            super(ComponentPixivFast, self).__init__(config_path, config_dict, load_config_from_abs_path, init_verbose)
+        else:
+            super().__init__("pixiv_fast.ini", init_verbose=init_verbose)
 
         self.logger.info("Logging in")
         self.pixiv_api = AppPixivAPI()

@@ -14,8 +14,11 @@ class ComponentGelbooru(BaseComponent, IComponents):
     BASE_URL = "https://gelbooru.com/index.php?page=post&s=list&tags={tag}&pid={page}"
     IMAGES_PER_PAGE = 42
 
-    def __init__(self):
-        super().__init__("gelbooru.ini")
+    def __init__(self, config_path: str = None, config_dict: dict = None, load_config_from_abs_path=False, init_verbose=False):
+        if config_path or config_path:
+            super(ComponentGelbooru, self).__init__(config_path, config_dict, load_config_from_abs_path, init_verbose)
+        else:
+            super().__init__("gelbooru.ini", init_verbose)
         self.config.cvt_str_list(["tags", "tags_exclude"])
 
     def _construct_query(self) -> str:

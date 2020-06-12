@@ -55,7 +55,7 @@ class BaseComponent(Utils):
             self.config.parse_cfg_from_dict(config_dict)
             missing_configs = self.validate_basic_config_requirements()
             if missing_configs:
-                raise
+                raise AssertionError("Invalid Config, run validate_basic_config_requirements to see missing fields")
         else:
             self.init_config(config_path, load_config_from_abs_path)
         self.init_logger()

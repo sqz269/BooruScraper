@@ -54,8 +54,11 @@ class ComponentPixiv(BaseComponent, IComponents):
 
     # "&p={page}" is missing because it will not be formatted with user set configurations
 
-    def __init__(self, init_verbose=True):
-        super().__init__("pixiv.ini", init_verbose=init_verbose)
+    def __init__(self, config_path: str = None, config_dict: dict = None, load_config_from_abs_path=False, init_verbose=False):
+        if config_path or config_dict:
+            super(ComponentPixiv, self).__init__(config_path, config_dict, load_config_from_abs_path, init_verbose)
+        else:
+            super().__init__("pixiv.ini", init_verbose=init_verbose)
         self.request_cookie    = {"PHPSESSID": self.config["phpsessid"]}
         self.url_as_referer = True
         # User-Agent Header will auto configure

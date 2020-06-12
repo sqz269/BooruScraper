@@ -60,9 +60,12 @@ class ComponentsDanbooru(BaseComponent, IComponents):
         "source_origin_exclude":["image_source",      list, MatchMode.SUPER_EXCLUDE, " "]
     }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, config_path: str = None, config_dict: dict = None, load_config_from_abs_path=False, init_verbose=False):
         # See _base_component->BaseComponent's constructor for argument details
-        super().__init__("danbooru.ini")
+        if config_path or config_dict:
+            super(ComponentsDanbooru, self).__init__(config_path, config_dict, load_config_from_abs_path, init_verbose)
+        else:
+            super().__init__("danbooru.ini", init_verbose)
         self.config.cvt_str_list(["tags_extra", "tags_exclude_extra"])
 
     def generate_urls(self) -> List[Tuple[str, str]]:
