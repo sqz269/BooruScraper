@@ -7,7 +7,8 @@ import requests
 from bs4 import BeautifulSoup
 from dateutil.parser import parse as time_parse
 
-from Scraper.framework.components_basic import ComponentBasic
+from Scraper.framework.i_components import IComponents
+from Scraper.framework.base_component import BaseComponent
 
 IMAGE_DATA_FIELD_TO_JSON_DATA_FIELD = {
     "image_id": "id",
@@ -31,7 +32,8 @@ IMAGE_DATA_FIELD_TO_JSON_DATA_FIELD = {
     "image_is_original":    "isOriginal"
 }
 
-class ComponentPixiv(ComponentBasic):
+
+class ComponentPixiv(BaseComponent, IComponents):
     api_endpoint = ("""
         https://www.pixiv.net/ajax/search/artworks/{f_tags}?word={f_tags}
                                                             &order={sorted_by}

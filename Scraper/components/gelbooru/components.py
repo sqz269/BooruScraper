@@ -3,13 +3,14 @@ from urllib.parse import urlparse
 import requests
 from bs4 import BeautifulSoup
 
-from Scraper.framework.components_basic import ComponentBasic
+from Scraper.framework.i_components import IComponents
+from Scraper.framework.base_component import BaseComponent
 
 # TODO: Fix a problem where config {tags} used in master dir string
 # will be presented in the form of a list instead of expected string
 
 
-class ComponentGelbooru(ComponentBasic):
+class ComponentGelbooru(BaseComponent, IComponents):
     BASE_URL = "https://gelbooru.com/index.php?page=post&s=list&tags={tag}&pid={page}"
     IMAGES_PER_PAGE = 42
 

@@ -5,7 +5,6 @@ from typing import Union
 
 from Scraper.libs.cfgBuilder import ConfigurationBuilder
 from Scraper.libs.logger import init_logging
-from Scraper.libs.singleton import Singleton
 from Scraper.libs.utils import Utils
 
 
@@ -22,7 +21,7 @@ class MatchMode:
     # VARY    = 5
 
 
-class BaseComponent(Utils, metaclass=Singleton):
+class BaseComponent(Utils):
     CONFIG_REQUIRED_FIELDS = [
         "save_path", "filename_string", "csv_entry_string", "master_directory_name_string",
         "max_concurrent_thread", "delay_start", "logger_stdout", "logger_file", "logger_name",
@@ -48,13 +47,19 @@ class BaseComponent(Utils, metaclass=Singleton):
 
         self.math_eval_var = {"local": {}, "global": {}}
 
-        self.debug_print("[*] Initalizing basic components")
+        self._debug_print("[*] Initalizing basic components")
 
         self.init_config(config_path, load_config_from_abs_path)
 
         self.init_logger()
 
         self.logger.info("Basic Component Initialized")
+
+        self.url_as_referer: bool = None
+        self.request_header: dict = {}
+        self.request_cookie: dict = {}
+        self.request_header.update({"User-Agent": self.config["user_agent"]})
+
         super().__init__(self.logger)
 
     def validate_basic_config_requirements(self) -> list:
@@ -73,19 +78,19 @@ class BaseComponent(Utils, metaclass=Singleton):
 
     def init_config(self, config_path, load_config_from_abs_path):
         self.config = ConfigurationBuilder()
-        self.debug_print(f"[*] Reading Configuration file at: {config_path}")
+        self._debug_print(f"[*] Reading Configuration file at: {config_path}")
 
         # Load Configuration
         cfg_loader = self.config.parse_cfg_from_path if load_config_from_abs_path else self.config.parse_cfg_from_module_directory
-        self.debug_print(
+        self._debug_print(
             f"[*] Loading configuration via: {'absolute path' if load_config_from_abs_path else 'configuration directory'}")
         if not cfg_loader(config_path):
             print(f"[!] Failed to parse config file at location: {config_path}. File does not exist or inaccessible")
             input("[-] Base Component Initialization Failed; Press Enter to Exit")
             raise SystemExit("Failed to load Config")
-        self.debug_print("[+] Configuration loaded")
+        self._debug_print("[+] Configuration loaded")
 
-        self.debug_print("[*] Validating Configuration")
+        self._debug_print("[*] Validating Configuration")
         missing_keys = self.validate_basic_config_requirements()  # returns empty list if nothing is missing
         if missing_keys:
             print(f"[-] Invalid Config, Required fields are missing. Missing Keys: {missing_keys}")
@@ -93,7 +98,7 @@ class BaseComponent(Utils, metaclass=Singleton):
             raise SystemExit("Invalid Configuration")
 
     def init_logger(self):
-        self.debug_print(
+        self._debug_print(
             f"[*] Preparing Loggers; Logger name: {self.config['logger_name']}; File Level: {self.config['logger_file']}; Console Level: {self.config['logger_stdout']}")
         self.logger = init_logging(
             level_stdout=self.config["logger_stdout"],
@@ -102,7 +107,7 @@ class BaseComponent(Utils, metaclass=Singleton):
         )
         self.logger.debug("Logger Initalized")
 
-    def debug_print(self, msg: str):
+    def _debug_print(self, msg: str):
         if self.init_verbose:
             print(msg)
 

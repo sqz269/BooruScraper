@@ -1,5 +1,5 @@
-from Scraper.framework.components_basic import ComponentBasic
-from Scraper.framework.base_component import MatchMode
+from Scraper.framework.i_components import IComponents
+from Scraper.framework.base_component import MatchMode, BaseComponent
 from typing import Tuple, List
 
 from bs4 import BeautifulSoup
@@ -7,7 +7,7 @@ from bs4.element import Tag
 import requests
 
 
-class ComponentsDanbooru(ComponentBasic):
+class ComponentsDanbooru(BaseComponent, IComponents):
     base_url = "https://danbooru.donmai.us/posts?page={page}&tags={tag}"
     base_submission_url = "https://danbooru.donmai.us/posts/{id}"
 

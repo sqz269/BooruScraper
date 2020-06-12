@@ -3,10 +3,10 @@ import time
 from concurrent.futures.thread import ThreadPoolExecutor
 from typing import BinaryIO, List, Tuple
 
-from Scraper.framework.components_basic import ComponentBasic
+from Scraper.framework.i_components import IComponents
 
 
-def init_scraper_base(SuperClass: ComponentBasic, *args, **kwargs):
+def init_scraper_base(SuperClass: IComponents, *args, **kwargs):
     """Initializes a class instance of ScraperBase with SuperClass (parameter) as it's superclass
 
     Arguments:

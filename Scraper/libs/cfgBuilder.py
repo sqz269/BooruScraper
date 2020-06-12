@@ -15,6 +15,12 @@ class ConfigurationBuilder():
         }
 
     def get_configuration(self) -> dict:
+        """
+        Returns a copy of current configuration stored in this instance
+
+        Returns:
+            {dict} - a copy of current config
+        """
         return self.configuration
 
     @staticmethod
@@ -49,14 +55,28 @@ class ConfigurationBuilder():
         raise ValueError("Value is not a valid logging level")
 
     @staticmethod
-    def file_value(value) -> list:
+    def file_value(value: str) -> list:
+        """
+        Attempts to retrieve values stored in files according the the file string (file<[encoding]><[separator]>: [path]
+
+        Args:
+            value {str}: The string that is a meant to point at a file (file string)
+
+        Returns:
+            {list}: The data in the file, separated using the provided separator
+
+        Raises:
+            PermissionError: Raises when the string deems to be a file string but the path provided
+                string is inaccessible due to it's permission settings
+
+            FileNotFoundError: Raises when the string deems to be a file string but the path provided
+                is not valid or inaccessible
+        """
         base_format_string = "file<{encoding}><{separator}>: {path}"
         file_info: list = value.strip().split(":")
 
-        if not (len(file_info) == 2 and file_info[0][:4] == "file"):
-            raise AssertionError("value does not point to file")
-
         encoding, separator, path = parse.parse(base_format_string, value).named.values()
+        # parse.parse will return none if it's not properly formatted which cause unpack to fail
 
         print(
             f"Following configuration's file at path: {path}, with encoding: {encoding}, and splitting with separator: {separator}")
@@ -118,6 +138,11 @@ class ConfigurationBuilder():
             "[-] Unable to parse config. No configuration directory found. please create a file with name \".config_directory\" in your configuration folder. At or below level of main.py")
         return False
 
+    def parse_cfg_from_dict(self, config_dict: dict):
+        for k, v in config_dict.items():
+            v = self.get_value(v)
+            self.configuration.update({k: v})
+
     def validate_cfg(self):
         for key, values in self.configuration.items():
             if not values:
@@ -133,6 +158,6 @@ class ConfigurationBuilder():
 
 if __name__ == "__main__":
     cfg = ConfigurationBuilder()
-    cfg.prase_cfg_complete(input("Enter config Path: "))
+    cfg.parse_cfg_from_path(input("Enter config Path: "))
     print(cfg.configuration)
     input("Press Enter to Exit")

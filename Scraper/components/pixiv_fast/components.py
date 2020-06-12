@@ -2,10 +2,11 @@ import time
 from dateutil.parser import parse as time_parse
 from pixivpy3.aapi import AppPixivAPI
 
-from Scraper.framework.components_basic import ComponentBasic
+from Scraper.framework.base_component import BaseComponent
+from Scraper.framework.i_components import IComponents
 
 
-class ComponentPixivFast(ComponentBasic):
+class ComponentPixivFast(BaseComponent, IComponents):
     pixiv_submission_base_link = "https://www.pixiv.net/artworks/{id}"
 
     def __init__(self, *args, **kwargs):
