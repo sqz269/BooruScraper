@@ -19,24 +19,25 @@ class UI_TYPE:
 class UiConfigurationHelper:
 
     @staticmethod
-    def dump_config(ui_name_to_normal_name: list, combo_box_config_to_index: dict) -> dict:
+    def dump_config(ui_name_to_normal_name: list, combo_box_config_to_index: dict, key_to_lower=True) -> dict:
         data = {}
         for e in ui_name_to_normal_name:
             element_type = e[2]
+            key = e[0].lower() if key_to_lower else e[0]
             if element_type == UI_TYPE.TEXT_INPUT:
-                data.update({e[0]: e[1].text()})
+                data.update({key: e[1].text()})
                 continue
 
             if element_type == UI_TYPE.SPIN_BOX:
-                data.update({e[0]: e[1].value()})
+                data.update({key: e[1].value()})
                 continue
 
             if element_type == UI_TYPE.CHECK_BOX:
-                data.update({e[0]: e[1].isChecked()})
+                data.update({key: e[1].isChecked()})
                 continue
 
             if element_type == UI_TYPE.DROPDOWN:
-                setting_2_index = combo_box_config_to_index[e[0]]
+                setting_2_index = combo_box_config_to_index[e[0]]  # use the original variable to keep consistency
                 current_ind = e[1].currentIndex()
 
                 normal_value = None
@@ -50,15 +51,15 @@ class UiConfigurationHelper:
                                                         f"Configuration Name: {e[0]}")
                     raise SystemExit(1)
 
-                data.update({e[0]: normal_value})
+                data.update({key: normal_value})
                 continue
 
             if element_type == UI_TYPE.DATE_INPUT:
-                data.update({e[0]: e[1].date().toPyDate()})
+                data.update({key: e[1].date().toPyDate()})
                 continue
 
             if element_type == UI_TYPE.VALUE:
-                data.update({e[0]: e[1]})
+                data.update({key: e[1]})
                 continue
 
         return data

@@ -176,13 +176,20 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
 
     def dump_config(self) -> dict:
         config = UiConfigurationHelper.dump_config(self.UI_CONFIG_NAME_TO_NORMAL_NAME,
-                                                   self.COMBO_BOX_SETTING_NAME_TO_INDEX)
+                                                   self.COMBO_BOX_SETTING_NAME_TO_INDEX,
+                                                   key_to_lower=True)
+
+        # Parse date to YYYY-MM-DD
+        config["submission_before"] = config["submission_before"].strftime("%Y-%m-%d")
+        config["submission_after"] = config["submission_after"].strftime("%Y-%m-%d")
 
         # We are going to parse some of the values to see if they are meant to be ignored
-        if config["SUBMISSION_BEFORE"] == "2009-09-09":
-            config["SUBMISSION_BEFORE"] = ""
-        if config["SUBMISSION_AFTER"] == "2009-09-09":
-            config["SUBMISSION_AFTER"] = ""
+        if config["submission_before"] == "2009-09-09":
+            config["submission_before"] = ""
+        if config["submission_after"] == "2009-09-09":
+            config["submission_after"] = ""
+
+        return config
 
     def exec_scraper(self, scraper_inst: ComponentPixiv):
         scraper_inst.entry_point(scraper_inst)
