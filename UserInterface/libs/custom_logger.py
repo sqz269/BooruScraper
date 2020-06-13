@@ -89,8 +89,7 @@ class UiLogger(logging.Logger):
 
         fmt_msg = self._info_message_style.format(message=msg,
                                                   time=datetime.datetime.now().time().replace(microsecond=0).isoformat())
-        self._status_window.ui_helper.log_event.emit(fmt_msg, f"{msg}\n", self._info_count, 'info')
-        # self._status_window.ui_helper.log_event.emit(fmt_msg)
+        self._status_window.ui_helper.log_event.emit(fmt_msg, f"[INFO] {msg}\n\n", self._info_count, 'info')
 
     def warning(self, msg, *args, **kwargs):
         self._counter_lock.acquire()
@@ -99,8 +98,7 @@ class UiLogger(logging.Logger):
 
         fmt_msg = self._warning_message_style.format(message=msg,
                                                      time=datetime.datetime.now().time().replace(microsecond=0).isoformat())
-        self._status_window.ui_helper.log_event.emit(fmt_msg, f"{msg}\n", self._warn_count, 'warning')
-        # self._status_window.ui_helper.log_event.emit(fmt_msg)
+        self._status_window.ui_helper.log_event.emit(fmt_msg, f"[WARNING] {msg}\n\n", self._warn_count, 'warning')
 
     def error(self, msg: Any, *args: Any, exc_info=...,
               stack_info: bool = ..., stacklevel: int = ..., extra: Optional[Dict[str, Any]] = ...,
@@ -112,8 +110,7 @@ class UiLogger(logging.Logger):
         fmt_msg = self._error_message_style.format(message=msg,
                                                    time=datetime.datetime.now().time().replace(microsecond=0).isoformat())
 
-        self._status_window.ui_helper.log_event.emit(fmt_msg, f"{msg}\n", self._error_count, 'error')
-        # self._status_window.ui_helper.log_event.emit(fmt_msg)
+        self._status_window.ui_helper.log_event.emit(fmt_msg, f"[ERROR] {msg}\n\n", self._error_count, 'error')
 
     def exception(self, msg: Any, *args: Any, exc_info=...,
                   stack_info: bool = ..., stacklevel: int = ..., extra: Optional[Dict[str, Any]] = ...,
@@ -129,7 +126,7 @@ class UiLogger(logging.Logger):
 
         fmt_msg = self._exec_message_style.format(message=exc_message,
                                                   time=datetime.datetime.now().time().replace(microsecond=0).isoformat())
-        self._status_window.ui_helper.log_event.emit(fmt_msg, f"{exc_message}\n", self._error_count, 'error')
+        self._status_window.ui_helper.log_event.emit(fmt_msg, f"[EXCEPTION] {exc_message}\n\n", self._error_count, 'error')
 
     def critical(self, msg: Any, *args: Any, exc_info=...,
                  stack_info: bool = ..., stacklevel: int = ..., extra: Optional[Dict[str, Any]] = ...,
@@ -138,6 +135,7 @@ class UiLogger(logging.Logger):
         call_stack = "---------------------\n".join(call_stack[:call_stack.__len__() - 1])  # Exclude current function from callstack
 
         log_file = self._status_window.export_log_emerg(msg, call_stack)
+        # TODO: Doesn't work yet because temp file get deleted after close
         QMessageBox.critical(None, f"{self._status_window.status_window_name}: FATAL ERROR",
                              f"Fatal Error. The Application Must Exit\nLogs has been exported to: \n{log_file}\n\n{msg}\n")
 
