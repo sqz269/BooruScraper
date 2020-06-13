@@ -49,7 +49,7 @@ class BaseComponent(Utils):
         self.request_cookie: dict = {}
         self.math_eval_var = {"local": {}, "global": {}}
 
-        self._debug_print("[*] Initalizing basic components")
+        self._debug_print("[*] Initializing basic components")
         if config_dict:
             self.config = ConfigurationBuilder()
             self.config.parse_cfg_from_dict(config_dict)
@@ -130,7 +130,7 @@ class BaseComponent(Utils):
         return requirements_missed
 
     def _validate_requirement(self, standard_value, value, v_type: Union[int, str, list, bool],
-                              mode: MatchMode, separater=",", data=None) -> bool:
+                              mode: MatchMode, separator=",", data=None) -> bool:
         """Validates a requirement (duh)
 
         Arguments:
@@ -195,7 +195,7 @@ class BaseComponent(Utils):
                 return False
 
             if isinstance(value, str):
-                value = value.split(separater)
+                value = value.split(separator)
 
             if mode == MatchMode.SUPER_INCLUDE:
                 for elements in standard_value:
