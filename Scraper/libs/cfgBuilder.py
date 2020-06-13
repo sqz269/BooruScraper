@@ -75,7 +75,7 @@ class ConfigurationBuilder():
         base_format_string = "file<{encoding}><{separator}>: {path}"
         file_info: list = value.strip().split(":")
 
-        encoding, separator, path = parse.parse(base_format_string, value).named.values()
+        encoding, separator, path = parse.parse(base_format_string, value)
         # parse.parse will return none if it's not properly formatted which cause unpack to fail
 
         print(
@@ -87,10 +87,10 @@ class ConfigurationBuilder():
             return file.read().strip() if separator.lower() == "none" else file.read().strip().split(separator)
 
     @staticmethod
-    def get_value(value: str) -> type:
+    def get_value(value: str):
         try:
             return ConfigurationBuilder.file_value(value)
-        except (AssertionError, ValueError):
+        except (AssertionError, TypeError):
             pass
 
         try:
@@ -138,10 +138,20 @@ class ConfigurationBuilder():
             "[-] Unable to parse config. No configuration directory found. please create a file with name \".config_directory\" in your configuration folder. At or below level of main.py")
         return False
 
-    def parse_cfg_from_dict(self, config_dict: dict):
-        for k, v in config_dict.items():
-            v = self.get_value(v)
-            self.configuration.update({k: v})
+    def parse_cfg_from_dict(self, config_dict: dict, parse=False):
+        """
+        Loads configuration from existing dictionary,
+            Used mostly with UI components
+        Args:
+            config_dict: The dictionary containing the configuration we are loading
+            parse: Parse the value of the dictionary using self.get_value() {default: False}
+        """
+        if parse:
+            for k, v in config_dict.items():
+                v = self.get_value(v)
+                self.configuration.update({k: v})
+        else:
+            self.configuration = config_dict
 
     def validate_cfg(self):
         for key, values in self.configuration.items():
