@@ -100,7 +100,9 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
             # Logger init params, we won't be using this: see libs/custom_logger.py for details
             ["LOGGER_FILE", 0, UI_TYPE.VALUE],
             ["LOGGER_STDOUT", 0, UI_TYPE.VALUE],
-            ["LOGGER_NAME", "pixiv", UI_TYPE.VALUE]
+            ["LOGGER_NAME", "pixiv", UI_TYPE.VALUE],
+
+            ["THREAD_NAME_PREFIX", "pixiv", UI_TYPE.VALUE]
         ]
 
         self.COMBO_BOX_SETTING_NAME_TO_INDEX = {
