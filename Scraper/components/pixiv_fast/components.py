@@ -1,15 +1,21 @@
 import time
+
 from dateutil.parser import parse as time_parse
 from pixivpy3.aapi import AppPixivAPI
 
-from Scraper.framework.components_basic import ComponentBasic
+from Scraper.framework.base_component import BaseComponent
+from Scraper.framework.i_components import IComponents
 
 
-class ComponentPixivFast(ComponentBasic):
+class ComponentPixivFast(BaseComponent, IComponents):
     pixiv_submission_base_link = "https://www.pixiv.net/artworks/{id}"
 
-    def __init__(self, *args, **kwargs):
-        super().__init__("pixiv_fast.ini", init_verbose=True, *args, **kwargs)
+    def __init__(self, config_path: str = None, config_dict: dict = None, load_config_from_abs_path=False,
+                 init_verbose=False):
+        if config_dict or config_path:
+            super(ComponentPixivFast, self).__init__(config_path, config_dict, load_config_from_abs_path, init_verbose)
+        else:
+            super().__init__("pixiv_fast.ini", init_verbose=init_verbose)
 
         self.logger.info("Logging in")
         self.pixiv_api = AppPixivAPI()
@@ -123,6 +129,6 @@ class ComponentPixivFast(ComponentBasic):
         current_JST_time = time.time() + 32400  # 32400 is 9 hours which is the JST offset from CST (Central Daylight Time), That is assuming you are in CST
         upload_time = time_parse(created_date).timestamp()  # parse the ISO-8601 Formmatted string to Epoch
         days_passed = (
-                                  current_JST_time - upload_time) / 86400  # divide the difference between current time and upload time by a day
+                              current_JST_time - upload_time) / 86400  # divide the difference between current time and upload time by a day
         bookmark_per_day = total_bookmark / days_passed
         return bookmark_per_day

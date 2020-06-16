@@ -1,22 +1,9 @@
-from Scraper.framework.base_component import BaseComponent
-
 from typing import List, Tuple
 
 
-class ComponentBasic(BaseComponent):
+class IComponents:
     """All methods in this class should be overridden by it's child
     """
-
-    def __init__(self, *args, **kwargs):
-        self.url_as_referer: bool = None
-        self.request_header: dict = {}
-        self.request_cookie: dict = {}
-
-        # Arguments: config_path: str, load_config_from_abs_path=False, init_verbose=False
-        super().__init__(*args, **kwargs)  # Load the configuration file from this path
-
-        self.logger.debug(f"Using User-Agent for header: {self.config['user_agent']}")
-        self.request_header.update({"User-Agent": self.config["user_agent"]})
 
     def generate_urls(self) -> List[Tuple[str, str]]:
         self.logger.fatal("Function: \"generate_urls(self)\" was not overridden")

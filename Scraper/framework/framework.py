@@ -1,12 +1,12 @@
 import os
 import time
 from concurrent.futures.thread import ThreadPoolExecutor
-from typing import BinaryIO, List, Tuple
+from typing import BinaryIO, Tuple
 
-from Scraper.framework.components_basic import ComponentBasic
+from Scraper.framework.i_components import IComponents
 
 
-def init_scraper_base(SuperClass: ComponentBasic, *args, **kwargs):
+def init_scraper_base(SuperClass: IComponents, *args, **kwargs):
     """Initializes a class instance of ScraperBase with SuperClass (parameter) as it's superclass
 
     Arguments:
@@ -28,13 +28,8 @@ def init_scraper_base(SuperClass: ComponentBasic, *args, **kwargs):
 
             super().__init__(*args, **kwargs)
 
-        def run(self, urls: List[Tuple[str, int]]):
+        def run(self):
             """executes the scraper
-
-            Arguments:
-                urls {List[Tuple[str, int]]} -- the list of url to scrape, it should be containing a tuple
-                                                First element of tuple should be the actual URL
-                                                Second element should be the page the url corresponds to
             """
             self.logger.info("Preparing folders and files")
             self.initialize_file_and_directory()
@@ -56,7 +51,11 @@ def init_scraper_base(SuperClass: ComponentBasic, *args, **kwargs):
                 self.logger.info(
                     f"Queued {len(urls)} urls for processing, with {self.config['max_concurrent_thread']} available workers")
 
+            self.logger.info("Main scraping operation completed, cleaning up")
+
             self.clean_up()
+
+            self.logger.info("Cleanup Completed")
 
         def _start(self, target: Tuple[str, int]):
             """Actually starts scraping
@@ -90,9 +89,12 @@ def init_scraper_base(SuperClass: ComponentBasic, *args, **kwargs):
                                 dl_path = os.path.join(page_path, img_data["image_id"])
                                 os.makedirs(dl_path, True)
                                 self.logger.debug(f"Using Submission specific directory at: {dl_path}")
+                            self.logger.info(f"Downloading images from submission id: {img_data['image_id']}")
                             for index, img_url in enumerate(img_data["image_links"]):
                                 self.logger.debug(f"Downloading image: {img_data['image_id']}")
                                 self._download_image(img_url, img_data, dl_path, index)
+
+                self.logger.info(f"Processing completed for page: {page_number}")
 
             except (KeyboardInterrupt):
                 self.logger.fatal("Ctrl+C Received. Terminating")
