@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>276</width>
+    <width>274</width>
     <height>278</height>
    </rect>
   </property>
@@ -102,63 +102,13 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
-         <widget class="QGroupBox" name="pixiv_fast_config">
-          <property name="title">
-           <string>Module Configuration (PIXIV FAST)</string>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Coming Soon (Probably)</string>
           </property>
-          <layout class="QGridLayout" name="gridLayout_8">
-           <item row="0" column="0">
-            <widget class="QPushButton" name="pixiv_fast_config_show">
-             <property name="text">
-              <string>Show Configuration</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QPushButton" name="pixiv_fast_config_save">
-             <property name="text">
-              <string>Save Configuration</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QPushButton" name="pixiv_fast_config_load">
-             <property name="text">
-              <string>Load Prexisting Configuration</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="pixiv_fast_status">
-          <property name="title">
-           <string>Status</string>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
           </property>
-          <layout class="QGridLayout" name="gridLayout_9">
-           <item row="0" column="0">
-            <widget class="QLabel" name="pixiv_fast_status_current_l">
-             <property name="text">
-              <string>Current Status:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="pixiv_fast_status_current">
-             <property name="text">
-              <string>Stopped</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0" colspan="2">
-            <widget class="QPushButton" name="pixiv_fast_status_show_detail">
-             <property name="text">
-              <string>View Details</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
          </widget>
         </item>
        </layout>
@@ -169,63 +119,13 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <widget class="QGroupBox" name="danbooru_config">
-          <property name="title">
-           <string>Module Configuration (DANBOORU)</string>
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Coming Soon (Probably)</string>
           </property>
-          <layout class="QGridLayout" name="gridLayout_12">
-           <item row="0" column="0">
-            <widget class="QPushButton" name="danbooru_config_show">
-             <property name="text">
-              <string>Show Configuration</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QPushButton" name="danbooru_config_save">
-             <property name="text">
-              <string>Save Configuration</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QPushButton" name="danbooru_config_load">
-             <property name="text">
-              <string>Load Prexisting Configuration</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="danbooru_status">
-          <property name="title">
-           <string>Status</string>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
           </property>
-          <layout class="QGridLayout" name="gridLayout_13">
-           <item row="0" column="0">
-            <widget class="QLabel" name="danbooru_status_current_l">
-             <property name="text">
-              <string>Current Status:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="danbooru_status_current">
-             <property name="text">
-              <string>Stopped</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0" colspan="2">
-            <widget class="QPushButton" name="danbooru_status_show_detail">
-             <property name="text">
-              <string>View Details</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
          </widget>
         </item>
        </layout>
@@ -236,87 +136,13 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_7">
         <item>
-         <widget class="QGroupBox" name="gelbooru_config">
-          <property name="title">
-           <string>Module Configuration (GELBOORU)</string>
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>Coming Soon (Probably)</string>
           </property>
-          <layout class="QGridLayout" name="gridLayout_14">
-           <item row="0" column="0">
-            <widget class="QPushButton" name="gelbooru_config_show">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Show Configuration</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QPushButton" name="gelbooru_config_save">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Save Configuration</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QPushButton" name="gelbooru_config_load">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Load Prexisting Configuration</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="gelbooru_status">
-          <property name="title">
-           <string>Status</string>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
           </property>
-          <layout class="QGridLayout" name="gridLayout_15">
-           <item row="0" column="0">
-            <widget class="QLabel" name="gelbooru_status_current_l">
-             <property name="text">
-              <string>Current Status:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="gelbooru_status_current">
-             <property name="text">
-              <string>Stopped</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0" colspan="2">
-            <widget class="QPushButton" name="gelbooru_status_show_detail">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>View Details</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
          </widget>
         </item>
        </layout>
