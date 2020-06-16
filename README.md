@@ -34,7 +34,7 @@ If you launched command prompt using **normal user** use this command:  `pip ins
 3. Edit the configuration or load existing ones using File/Load(Save) Configuration in the tool bar
 
 ## Framework Documentation
-See Scraper/docs for framework documentation
+See Docs/FrameworkUsage.md for framework documentation
 
 ## Contributing
 All contributions are welcome
