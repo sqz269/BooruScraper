@@ -73,7 +73,6 @@ class ConfigurationBuilder():
                 is not valid or inaccessible
         """
         base_format_string = "file<{encoding}><{separator}>: {path}"
-        file_info: list = value.strip().split(":")
 
         encoding, separator, path = parse.parse(base_format_string, value)
         # parse.parse will return none if it's not properly formatted which cause unpack to fail
@@ -138,15 +137,15 @@ class ConfigurationBuilder():
             "[-] Unable to parse config. No configuration directory found. please create a file with name \".config_directory\" in your configuration folder. At or below level of main.py")
         return False
 
-    def parse_cfg_from_dict(self, config_dict: dict, parse=False):
+    def parse_cfg_from_dict(self, config_dict: dict, parse_value=False):
         """
         Loads configuration from existing dictionary,
             Used mostly with UI components
         Args:
             config_dict: The dictionary containing the configuration we are loading
-            parse: Parse the value of the dictionary using self.get_value() {default: False}
+            parse_value: Parse the value of the dictionary using self.get_value() {default: False}
         """
-        if parse:
+        if parse_value:
             for k, v in config_dict.items():
                 v = self.get_value(v)
                 self.configuration.update({k: v})
