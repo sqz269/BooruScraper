@@ -12,6 +12,7 @@ from UserInterface.libs.ui_config_assist import UI_TYPE, UiConfigurationHelper
 from UserInterface.Ui_Scripts.pixiv_window import Ui_PixivConfigurationWindow
 from UserInterface.libs.custom_logger import UiLogger
 
+# TODO: Disable start button if it's in progress
 
 class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindowHandler):
 
@@ -20,7 +21,7 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
         self._window = QtWidgets.QMainWindow()
         self.setupUi(self._window)
 
-        self._status_window: StatusWindowHandler = StatusWindowHandler("Pixiv Status")
+        self.status_window: StatusWindowHandler = StatusWindowHandler("Pixiv Status")
 
         self.bind_elements()
 
@@ -143,15 +144,18 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
             lambda: UiConfigurationHelper.browse_dir(self.pixiv_output_folder))
 
         self.pixiv_operation_start.clicked.connect(self.start_scrape)
-        self.pixiv_operation_terminate.clicked.connect(self.terminate)
 
         self.pixiv_view_status_detail.clicked.connect(self.show_status_window)
 
         self.pixiv_action_load_config.triggered.connect(self.load_config)
         self.pixiv_action_save_config.triggered.connect(self.save_config)
 
+        self.status_window.ui_helper.scrape_event.connect(
+            lambda event_name:
+                self.status_window.update_overall_status(event_name, self.pixiv_scraper_status))
+
     def show_status_window(self):
-        self._status_window.show_window()
+        self.status_window.show_window()
 
     def show_config(self):
         self._window.show()
@@ -199,10 +203,12 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
     def start_scrape(self):
         # Subprocess may be required
         pixiv_scraper = init_scraper_base(ComponentPixiv, config_dict=self.dump_config(), init_verbose=False)
-        pixiv_scraper.logger = UiLogger("Pixiv", self._status_window)  # Replace logger, see custom_logger.py for more
+        pixiv_scraper.logger = UiLogger("Pixiv", self.status_window)  # Replace logger, see custom_logger.py for more
+
+        # Set the progress bar's max value on the status page
+        # end sub start is only the pages between, but start page itself also need to be counted
+        total_pages = self.pixiv_end_page.value() - self.pixiv_start_page.value() + 1
+        self.status_window.set_progress_bar_max(total_pages)
+
         self._active_scraper_thread = Thread(target=pixiv_scraper.entry_point, args=(pixiv_scraper, ), daemon=True)
         self._active_scraper_thread.start()
-
-    def terminate(self):
-        self._active_scraper_thread.kill()
-        self._active_scraper_thread = None

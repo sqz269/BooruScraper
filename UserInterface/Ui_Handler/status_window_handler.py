@@ -2,11 +2,11 @@ import os
 import tempfile
 
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QLabel
 
 from UserInterface.Ui_Scripts.status_window import Ui_StatusWindow
 from UserInterface.libs.ui_config_assist import UiConfigurationHelper
-from UserInterface.libs.log_window_update_helper import UiLoggingHelper
+from UserInterface.libs.log_window_update_helper import UiLoggingHelper, ScraperEvent
 
 
 class StatusWindowHandler(Ui_StatusWindow):
@@ -46,10 +46,13 @@ class StatusWindowHandler(Ui_StatusWindow):
     def bind_buttons(self):
         self.logs_clear_window.clicked.connect(self.clear_log_window)
         self.logs_export.clicked.connect(self.export_logs)
-        # self.terminate_current_task.clicked.connect()
 
     def bind_signals(self):
         self.ui_helper.log_event.connect(self.update_log_window)
+        self.ui_helper.page_complete.connect(self.update_page_completed)
+
+    def set_progress_bar_max(self, value):
+        self.status_overall_progress.setMaximum(value)
 
     def export_log_emerg(self, last_msg: str, callstack: str) -> str:
         """
@@ -86,3 +89,18 @@ class StatusWindowHandler(Ui_StatusWindow):
             self.status_warnings.setText(str(e_count))
         else:
             self.status_errors.setText(str(e_count))
+
+    def update_page_completed(self, total_page):
+        self.status_pages_completed.setText(str(total_page))
+        self.status_overall_progress.setValue(total_page)
+
+    def update_overall_status(self, event_type, status_label=None):
+        if event_type == ScraperEvent.IN_PROGRESS:
+            status_label.setStyleSheet("color: green;")
+            status_label.setText("IN PROGRESS")
+        elif event_type == ScraperEvent.CLEANING_UP:
+            status_label.setStyleSheet("color: yellow;")
+            status_label.setText("CLEANING UP")
+        elif event_type == ScraperEvent.COMPLETED:
+            status_label.setStyleSheet("color: blue;")
+            status_label.setText("COMPLETED")

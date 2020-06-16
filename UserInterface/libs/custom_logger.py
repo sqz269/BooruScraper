@@ -6,7 +6,7 @@ import traceback
 from typing import Any, Optional, Dict
 
 from UserInterface.Ui_Handler.status_window_handler import StatusWindowHandler
-from UserInterface.libs.log_window_update_helper import UiLoggingHelper
+from UserInterface.libs.log_window_update_helper import UiLoggingHelper, ScraperEvent
 
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
 
@@ -31,6 +31,10 @@ For example initialization of scraper when in gui mode:
 
 
 class UiLogger(logging.Logger):
+    EVENT_PAGE_COMPLETED = "Processing completed for page:"
+    EVENT_SCRAPE_INITIALIZING = "Preparing folders and files"
+    EVENT_SCRAPE_CLEANING_UP = "Main scraping operation completed, cleaning up"
+    EVENT_SCRAPE_COMPLETED = "Cleanup Completed"
 
     def __init__(self, name: str, status_window: StatusWindowHandler):
         """
@@ -47,6 +51,8 @@ class UiLogger(logging.Logger):
         self._info_count = 0
         self._warn_count = 0
         self._error_count = 0
+
+        self._page_processed_count = 0
         self._counter_lock = threading.Lock()
 
         self._exec_message_style = '<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; ' \
@@ -86,6 +92,26 @@ class UiLogger(logging.Logger):
         self._counter_lock.acquire()
         self._info_count += 1
         self._counter_lock.release()
+
+        # This is a bad implementation of tracking pages scraped, scraping completion
+        # but it's the only way i can think of that can do this w/o
+        # making framework dependent on the GUI elements
+        # **tracking events based on the logging message**
+        # The strings of those messages are stored as class variables
+        if msg.startswith(self.EVENT_PAGE_COMPLETED):
+            self._counter_lock.acquire()
+            self._page_processed_count += 1
+            self._counter_lock.release()
+            self._status_window.ui_helper.page_complete.emit(self._page_processed_count)
+
+        elif msg.startswith(self.EVENT_SCRAPE_INITIALIZING):
+            self._status_window.ui_helper.scrape_event.emit(ScraperEvent.IN_PROGRESS)
+
+        elif msg.startswith(self.EVENT_SCRAPE_CLEANING_UP):
+            self._status_window.ui_helper.scrape_event.emit(ScraperEvent.CLEANING_UP)
+
+        elif msg.startswith(self.EVENT_SCRAPE_COMPLETED):
+            self._status_window.ui_helper.scrape_event.emit(ScraperEvent.COMPLETED)
 
         fmt_msg = self._info_message_style.format(message=msg,
                                                   time=datetime.datetime.now().time().replace(microsecond=0).isoformat())

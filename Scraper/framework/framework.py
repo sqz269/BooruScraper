@@ -51,7 +51,11 @@ def init_scraper_base(SuperClass: IComponents, *args, **kwargs):
                 self.logger.info(
                     f"Queued {len(urls)} urls for processing, with {self.config['max_concurrent_thread']} available workers")
 
+            self.logger.info("Main scraping operation completed, cleaning up")
+
             self.clean_up()
+
+            self.logger.info("Cleanup Completed")
 
         def _start(self, target: Tuple[str, int]):
             """Actually starts scraping
@@ -85,9 +89,12 @@ def init_scraper_base(SuperClass: IComponents, *args, **kwargs):
                                 dl_path = os.path.join(page_path, img_data["image_id"])
                                 os.makedirs(dl_path, True)
                                 self.logger.debug(f"Using Submission specific directory at: {dl_path}")
+                            self.logger.info(f"Downloading images from submission id: {img_data['image_id']}")
                             for index, img_url in enumerate(img_data["image_links"]):
                                 self.logger.debug(f"Downloading image: {img_data['image_id']}")
                                 self._download_image(img_url, img_data, dl_path, index)
+
+                self.logger.info(f"Processing completed for page: {page_number}")
 
             except (KeyboardInterrupt):
                 self.logger.fatal("Ctrl+C Received. Terminating")

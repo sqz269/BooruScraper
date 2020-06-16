@@ -26,7 +26,7 @@ class Utils:
         """
         target_url = parse.unquote(target_url)
         dst = os.path.abspath(download_dst)
-        self.logger.info("Downloading: {}".format(target_url))
+        self.logger.debug("Downloading: {}".format(target_url))
         r = requests.get(target_url, headers=header, cookies=cookie)
 
         if r.status_code >= 400:

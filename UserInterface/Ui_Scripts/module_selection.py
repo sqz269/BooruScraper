@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\module_selection.ui'
+# Form implementation generated from reading ui file '.\UserInterface\Source\module_selection.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.0
 #
@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_ModuleSelectionWindow(object):
     def setupUi(self, ModuleSelectionWindow):
         ModuleSelectionWindow.setObjectName("ModuleSelectionWindow")
-        ModuleSelectionWindow.resize(296, 303)
+        ModuleSelectionWindow.resize(276, 278)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -48,12 +48,13 @@ class Ui_ModuleSelectionWindow(object):
         self.pixiv_status.setObjectName("pixiv_status")
         self.gridLayout_6 = QtWidgets.QGridLayout(self.pixiv_status)
         self.gridLayout_6.setObjectName("gridLayout_6")
-        self.pixiv_status_current = QtWidgets.QLabel(self.pixiv_status)
-        self.pixiv_status_current.setObjectName("pixiv_status_current")
-        self.gridLayout_6.addWidget(self.pixiv_status_current, 0, 0, 1, 1)
         self.pixiv_status_current_l = QtWidgets.QLabel(self.pixiv_status)
         self.pixiv_status_current_l.setObjectName("pixiv_status_current_l")
-        self.gridLayout_6.addWidget(self.pixiv_status_current_l, 0, 1, 1, 1)
+        self.gridLayout_6.addWidget(self.pixiv_status_current_l, 0, 0, 1, 1)
+        self.pixiv_status_current = QtWidgets.QLabel(self.pixiv_status)
+        self.pixiv_status_current.setStyleSheet("color: red")
+        self.pixiv_status_current.setObjectName("pixiv_status_current")
+        self.gridLayout_6.addWidget(self.pixiv_status_current, 0, 1, 1, 1)
         self.pixiv_status_show_detail = QtWidgets.QPushButton(self.pixiv_status)
         self.pixiv_status_show_detail.setObjectName("pixiv_status_show_detail")
         self.gridLayout_6.addWidget(self.pixiv_status_show_detail, 1, 0, 1, 2)
@@ -196,8 +197,8 @@ class Ui_ModuleSelectionWindow(object):
         self.pixiv_config_save.setText(_translate("ModuleSelectionWindow", "Save Configuration"))
         self.pixiv_config_load.setText(_translate("ModuleSelectionWindow", "Load Prexisting Configuration"))
         self.pixiv_status.setTitle(_translate("ModuleSelectionWindow", "Status"))
-        self.pixiv_status_current.setText(_translate("ModuleSelectionWindow", "Current Status:"))
-        self.pixiv_status_current_l.setText(_translate("ModuleSelectionWindow", "Stopped"))
+        self.pixiv_status_current_l.setText(_translate("ModuleSelectionWindow", "Current Status:"))
+        self.pixiv_status_current.setText(_translate("ModuleSelectionWindow", "Stopped"))
         self.pixiv_status_show_detail.setText(_translate("ModuleSelectionWindow", "View Details"))
         self.module_selection_tab.setTabText(self.module_selection_tab.indexOf(self.tab_pixiv), _translate("ModuleSelectionWindow", "Pixiv"))
         self.pixiv_fast_config.setTitle(_translate("ModuleSelectionWindow", "Module Configuration (PIXIV FAST)"))
