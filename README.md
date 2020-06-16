@@ -22,11 +22,19 @@ If you launched command prompt using **normal user** use this command:  `pip ins
 ### Currently Available Scrapers
 - Pixiv
 - Danbooru
-### Configuring and Running the scraper
+### Configuring and Running the scraper (Non-Graphical)
 1. A configuration directory already exist at: ./config
 2. Open the scraper you want to config with your fav text editor
 3. Please read the documentation for each scraper, some instructions in one scraper may not apply to others
 4. After the scraper is properly configured, run main.py to start the scraper
+### Configuring scraper via GUI
+*NOTE: Not all modules have a GUI window for configuration (Currently Available: Pixiv)*
+1. Run main_graphical.py to access the GUI for scrapers
+2. Access the configuration screen by clicking on **Show Configuration**
+3. Edit the configuration or load existing ones using File/Load(Save) Configuration in the tool bar
 
 ## Framework Documentation
 See Scraper/docs for framework documentation
+
+## Contributing
+All contributions are welcome
