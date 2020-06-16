@@ -11,8 +11,7 @@ from UserInterface.Ui_Handler.status_window_handler import StatusWindowHandler
 from UserInterface.libs.ui_config_assist import UI_TYPE, UiConfigurationHelper
 from UserInterface.Ui_Scripts.pixiv_window import Ui_PixivConfigurationWindow
 from UserInterface.libs.custom_logger import UiLogger
-
-# TODO: Disable start button if it's in progress
+from UserInterface.libs.log_window_update_helper import ScraperEvent
 
 class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindowHandler):
 
@@ -153,6 +152,14 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
         self.status_window.ui_helper.scrape_event.connect(
             lambda event_name:
                 self.status_window.update_overall_status(event_name, self.pixiv_scraper_status))
+
+        self.status_window.ui_helper.scrape_event.connect(self.update_ui_element_on_event)
+
+    def update_ui_element_on_event(self, event_name):
+        if event_name == ScraperEvent.COMPLETED:
+            self.pixiv_operation_start.setEnabled(True)
+        elif event_name == ScraperEvent.IN_PROGRESS:
+            self.pixiv_operation_start.setEnabled(False)
 
     def show_status_window(self):
         self.status_window.show_window()
