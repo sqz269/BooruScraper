@@ -94,7 +94,8 @@ class StatusWindowHandler(Ui_StatusWindow):
         self.status_pages_completed.setText(str(total_page))
         self.status_overall_progress.setValue(total_page)
 
-    def update_overall_status(self, event_type, status_label=None):
+    @staticmethod
+    def update_overall_status(event_type, status_label=None):
         if event_type == ScraperEvent.IN_PROGRESS:
             status_label.setStyleSheet("color: green;")
             status_label.setText("IN PROGRESS")

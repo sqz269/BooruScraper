@@ -204,7 +204,8 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
 
         return config
 
-    def exec_scraper(self, scraper_inst: ComponentPixiv):
+    @staticmethod
+    def exec_scraper(scraper_inst: ComponentPixiv):
         scraper_inst.entry_point(scraper_inst)
 
     def start_scrape(self):
