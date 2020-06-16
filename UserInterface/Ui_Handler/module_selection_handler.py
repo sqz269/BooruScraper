@@ -1,13 +1,11 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtWidgets
 
-from UserInterface.libs.ui_config_assist import UiConfigurationHelper
 from UserInterface.Ui_Handler.pixiv_handler import \
     PixivConfigurationWindowHandler
 from UserInterface.Ui_Scripts.module_selection import Ui_ModuleSelectionWindow
 
 
 class ModuleSelectionWindowHandler(Ui_ModuleSelectionWindow):
-
 
     def __init__(self):
         super().__init__()
@@ -24,7 +22,7 @@ class ModuleSelectionWindowHandler(Ui_ModuleSelectionWindow):
         self.pixiv_status_show_detail.clicked.connect(self.pixiv_config_window_handler.show_status_window)
         self.pixiv_config_window_handler.status_window.ui_helper.scrape_event.connect(
             lambda event_name:
-                self.pixiv_config_window_handler.status_window.update_overall_status(event_name, self.pixiv_status_current))
+            self.pixiv_config_window_handler.status_window.update_overall_status(event_name, self.pixiv_status_current))
 
     def show_window(self):
         self._window.show()

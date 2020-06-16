@@ -1,17 +1,17 @@
-import os
 from threading import Thread
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox
 
 from Scraper import ComponentPixiv
 from Scraper.framework.framework import init_scraper_base
-from UserInterface.libs.i_config_window_handler import IConfigWindowHandler
 from UserInterface.Ui_Handler.status_window_handler import StatusWindowHandler
-from UserInterface.libs.ui_config_assist import UI_TYPE, UiConfigurationHelper
 from UserInterface.Ui_Scripts.pixiv_window import Ui_PixivConfigurationWindow
 from UserInterface.libs.custom_logger import UiLogger
+from UserInterface.libs.i_config_window_handler import IConfigWindowHandler
 from UserInterface.libs.log_window_update_helper import ScraperEvent
+from UserInterface.libs.ui_config_assist import UI_TYPE, UiConfigurationHelper
+
 
 class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindowHandler):
 
@@ -151,7 +151,7 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
 
         self.status_window.ui_helper.scrape_event.connect(
             lambda event_name:
-                self.status_window.update_overall_status(event_name, self.pixiv_scraper_status))
+            self.status_window.update_overall_status(event_name, self.pixiv_scraper_status))
 
         self.status_window.ui_helper.scrape_event.connect(self.update_ui_element_on_event)
 
@@ -217,5 +217,5 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
         total_pages = self.pixiv_end_page.value() - self.pixiv_start_page.value() + 1
         self.status_window.set_progress_bar_max(total_pages)
 
-        self._active_scraper_thread = Thread(target=pixiv_scraper.entry_point, args=(pixiv_scraper, ), daemon=True)
+        self._active_scraper_thread = Thread(target=pixiv_scraper.entry_point, args=(pixiv_scraper,), daemon=True)
         self._active_scraper_thread.start()

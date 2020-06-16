@@ -28,7 +28,8 @@ class BaseComponent(Utils):
         "merge_file", "merge_file_keep_separate"
     ]
 
-    def __init__(self, config_path: str = None, config_dict: dict = None, load_config_from_abs_path=False, init_verbose=False):
+    def __init__(self, config_path: str = None, config_dict: dict = None, load_config_from_abs_path=False,
+                 init_verbose=False):
         """Performs Initialization for the most basic component required
 
         Arguments:
@@ -183,8 +184,8 @@ class BaseComponent(Utils):
                 return False
 
             if (standard_value == "" or
-                standard_value.lower() == "ignore" or
-                standard_value.lower() == "none"):
+                    standard_value.lower() == "ignore" or
+                    standard_value.lower() == "none"):
                 return True
 
             return standard_value == value
@@ -230,7 +231,8 @@ class BaseComponent(Utils):
         self.logger.warning(f"No Know Operation with type: {v_type}. Match Mode: {mode}")
 
     def init_math_eval_vars(self):
-        self.math_eval_var["local"] = {"e": math.e, "pi": math.pi, "tau": math.tau, "i": cmath.sqrt(-1), "cos": math.cos, "sin": math.sin, "sqrt": cmath.sqrt}
+        self.math_eval_var["local"] = {"e": math.e, "pi": math.pi, "tau": math.tau, "i": cmath.sqrt(-1),
+                                       "cos": math.cos, "sin": math.sin, "sqrt": cmath.sqrt}
 
     def math_eval(self, expr, local_var=None, global_var=None):
         loc = self.math_eval_var["local"].copy()

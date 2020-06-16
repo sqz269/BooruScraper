@@ -1,6 +1,6 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
 import configparser
 
+from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox
 
 from Scraper.libs.cfgBuilder import ConfigurationBuilder
@@ -46,7 +46,7 @@ class UiConfigurationHelper:
                         normal_value = k
                         break
                 else:
-                    QMessageBox.critical(None, "Error", "Failed to dump configuration."\
+                    QMessageBox.critical(None, "Error", "Failed to dump configuration." \
                                                         f"\nCannot find key associated with index {current_ind}"
                                                         f"Configuration Name: {e[0]}")
                     raise SystemExit(1)

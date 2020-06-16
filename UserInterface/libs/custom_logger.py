@@ -1,14 +1,14 @@
+import datetime
 import logging
 import sys
 import threading
-import datetime
 import traceback
 from typing import Any, Optional, Dict
 
-from UserInterface.Ui_Handler.status_window_handler import StatusWindowHandler
-from UserInterface.libs.log_window_update_helper import UiLoggingHelper, ScraperEvent
+from PyQt5.QtWidgets import QMessageBox
 
-from PyQt5.QtWidgets import QMainWindow, QMessageBox
+from UserInterface.Ui_Handler.status_window_handler import StatusWindowHandler
+from UserInterface.libs.log_window_update_helper import ScraperEvent
 
 """
 How does this file work
@@ -58,14 +58,14 @@ class UiLogger(logging.Logger):
         self._exec_message_style = '<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; ' \
                                    '-qt-block-indent:0; text-indent:0px;"><span style=" font-weight:600; ' \
                                    'color:#aa0000;">{time} [EXCEPTION] </span><span style=" font-weight:600;">{message}</span></p> '
-        self._error_message_style = '<p style=" margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; '\
+        self._error_message_style = '<p style=" margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; ' \
                                     '-qt-block-indent:0; text-indent:0px;"><span style=" color:#ff0000;">{time} [ERROR] ' \
                                     '</span><span style=" color:#000000;">{message}</span></p> '
         self._warning_message_style = '<p style=" margin-top:5px; margin-bottom:5px; margin-left:0px; ' \
                                       'margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" ' \
                                       'color:#ffaa00;">{time} [WARNING] </span><span style=" color:#000000;">{message}</span></p>'
         self._info_message_style = '<p style=" margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; ' \
-                                   '-qt-block-indent:0; text-indent:0px;"><span style=" color:#0000ff;">{time} [INFO] '\
+                                   '-qt-block-indent:0; text-indent:0px;"><span style=" color:#0000ff;">{time} [INFO] ' \
                                    '</span><span style=" color:#000000;">{message}</span></p></body></html> '
 
     @property
@@ -114,7 +114,8 @@ class UiLogger(logging.Logger):
             self._status_window.ui_helper.scrape_event.emit(ScraperEvent.COMPLETED)
 
         fmt_msg = self._info_message_style.format(message=msg,
-                                                  time=datetime.datetime.now().time().replace(microsecond=0).isoformat())
+                                                  time=datetime.datetime.now().time().replace(
+                                                      microsecond=0).isoformat())
         self._status_window.ui_helper.log_event.emit(fmt_msg, f"[INFO] {msg}\n\n", self._info_count, 'info')
 
     def warning(self, msg, *args, **kwargs):
@@ -123,7 +124,8 @@ class UiLogger(logging.Logger):
         self._counter_lock.release()
 
         fmt_msg = self._warning_message_style.format(message=msg,
-                                                     time=datetime.datetime.now().time().replace(microsecond=0).isoformat())
+                                                     time=datetime.datetime.now().time().replace(
+                                                         microsecond=0).isoformat())
         self._status_window.ui_helper.log_event.emit(fmt_msg, f"[WARNING] {msg}\n\n", self._warn_count, 'warning')
 
     def error(self, msg: Any, *args: Any, exc_info=...,
@@ -134,7 +136,8 @@ class UiLogger(logging.Logger):
         self._counter_lock.release()
 
         fmt_msg = self._error_message_style.format(message=msg,
-                                                   time=datetime.datetime.now().time().replace(microsecond=0).isoformat())
+                                                   time=datetime.datetime.now().time().replace(
+                                                       microsecond=0).isoformat())
 
         self._status_window.ui_helper.log_event.emit(fmt_msg, f"[ERROR] {msg}\n\n", self._error_count, 'error')
 
@@ -151,14 +154,17 @@ class UiLogger(logging.Logger):
         exc_message = f"{msg}.\n{call_stack_fmt}\n{exc_type.__name__}: {exc_obj}"
 
         fmt_msg = self._exec_message_style.format(message=exc_message,
-                                                  time=datetime.datetime.now().time().replace(microsecond=0).isoformat())
-        self._status_window.ui_helper.log_event.emit(fmt_msg, f"[EXCEPTION] {exc_message}\n\n", self._error_count, 'error')
+                                                  time=datetime.datetime.now().time().replace(
+                                                      microsecond=0).isoformat())
+        self._status_window.ui_helper.log_event.emit(fmt_msg, f"[EXCEPTION] {exc_message}\n\n", self._error_count,
+                                                     'error')
 
     def critical(self, msg: Any, *args: Any, exc_info=...,
                  stack_info: bool = ..., stacklevel: int = ..., extra: Optional[Dict[str, Any]] = ...,
                  **kwargs: Any) -> None:
         call_stack = traceback.format_stack()
-        call_stack = "---------------------\n".join(call_stack[:call_stack.__len__() - 1])  # Exclude current function from callstack
+        call_stack = "---------------------\n".join(
+            call_stack[:call_stack.__len__() - 1])  # Exclude current function from callstack
 
         log_file = self._status_window.export_log_emerg(msg, call_stack)
         # TODO: Doesn't work yet because temp file get deleted after close

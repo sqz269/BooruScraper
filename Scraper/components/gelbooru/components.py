@@ -3,8 +3,9 @@ from urllib.parse import urlparse
 import requests
 from bs4 import BeautifulSoup
 
-from Scraper.framework.i_components import IComponents
 from Scraper.framework.base_component import BaseComponent
+from Scraper.framework.i_components import IComponents
+
 
 # TODO: Fix a problem where config {tags} used in master dir string
 # will be presented in the form of a list instead of expected string
@@ -14,7 +15,8 @@ class ComponentGelbooru(BaseComponent, IComponents):
     BASE_URL = "https://gelbooru.com/index.php?page=post&s=list&tags={tag}&pid={page}"
     IMAGES_PER_PAGE = 42
 
-    def __init__(self, config_path: str = None, config_dict: dict = None, load_config_from_abs_path=False, init_verbose=False):
+    def __init__(self, config_path: str = None, config_dict: dict = None, load_config_from_abs_path=False,
+                 init_verbose=False):
         if config_path or config_path:
             super(ComponentGelbooru, self).__init__(config_path, config_dict, load_config_from_abs_path, init_verbose)
         else:
@@ -27,7 +29,8 @@ class ComponentGelbooru(BaseComponent, IComponents):
 
         rating = ""
         if (self.config["rating"] and self.config["rating_exclude"]):
-            self.logger.warning("Both \"rating\" and \"rating_exclude\" are specified. but only one can exist. Using \"rating_exclude\"")
+            self.logger.warning(
+                "Both \"rating\" and \"rating_exclude\" are specified. but only one can exist. Using \"rating_exclude\"")
             rating = f"-rating:{self.config['rating_exclude']}"
         else:
             if (self.config["rating"]):
@@ -41,7 +44,8 @@ class ComponentGelbooru(BaseComponent, IComponents):
     def generate_urls(self):
         # Urls page number increment by 42 and that's because there is 42 image on a page
         tags = self._construct_query()
-        return [(self.BASE_URL.format(tag=tags, page=i * self.IMAGES_PER_PAGE), str(i)) for i in range(self.config["start_page"], self.config["end_page"])]
+        return [(self.BASE_URL.format(tag=tags, page=i * self.IMAGES_PER_PAGE), str(i)) for i in
+                range(self.config["start_page"], self.config["end_page"])]
 
     def _predict_highres_url(self, org_url: str, tags: str) -> str:
         video_kw = ["webm", "animated"]
@@ -69,7 +73,8 @@ class ComponentGelbooru(BaseComponent, IComponents):
             if r.status_code <= 400:
                 return (full_url, extension)
             self.logger.debug("Original image did not have file extension type: {}".format(extension))
-        self.logger.warning("Failed to find an applicable file extension for image with original url: {}. Ignoring".format(org_url))
+        self.logger.warning(
+            "Failed to find an applicable file extension for image with original url: {}. Ignoring".format(org_url))
         return ("", "")
 
     def _extract_img_data(self, web_data: bytes, encoding="utf-8") -> list:

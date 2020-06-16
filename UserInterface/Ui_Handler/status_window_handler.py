@@ -2,11 +2,11 @@ import os
 import tempfile
 
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QMessageBox, QLabel
+from PyQt5.QtWidgets import QMessageBox
 
 from UserInterface.Ui_Scripts.status_window import Ui_StatusWindow
-from UserInterface.libs.ui_config_assist import UiConfigurationHelper
 from UserInterface.libs.log_window_update_helper import UiLoggingHelper, ScraperEvent
+from UserInterface.libs.ui_config_assist import UiConfigurationHelper
 
 
 class StatusWindowHandler(Ui_StatusWindow):

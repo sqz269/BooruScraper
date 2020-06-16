@@ -1,7 +1,7 @@
 import os
 import time
 from concurrent.futures.thread import ThreadPoolExecutor
-from typing import BinaryIO, List, Tuple
+from typing import BinaryIO, Tuple
 
 from Scraper.framework.i_components import IComponents
 

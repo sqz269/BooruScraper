@@ -1,9 +1,11 @@
 from PyQt5.QtCore import QObject, pyqtSignal
 
+
 class ScraperEvent:
     IN_PROGRESS = 0
     CLEANING_UP = 1
     COMPLETED = 2
+
 
 class UiLoggingHelper(QObject):
     # Log message, Normal Message, Level Count, Level Name

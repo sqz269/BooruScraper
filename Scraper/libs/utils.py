@@ -1,16 +1,15 @@
-from urllib import parse
-
 import os
 import shutil
+from urllib import parse
+
 import requests
 
-class Utils:
 
+class Utils:
 
     def __init__(self, logger):
         self.logger = logger
         super().__init__()
-
 
     def download(self, target_url: str, download_dst: str, header: dict, cookie: dict) -> str:
         """download file from target url
@@ -30,7 +29,8 @@ class Utils:
         r = requests.get(target_url, headers=header, cookies=cookie)
 
         if r.status_code >= 400:
-            self.logger.error("Failed to download: {} | Server responded with code: {}".format(target_url, r.status_code))
+            self.logger.error(
+                "Failed to download: {} | Server responded with code: {}".format(target_url, r.status_code))
             return;
 
         with open(dst, "wb") as f:
@@ -39,7 +39,6 @@ class Utils:
         self.logger.debug("Downloaded: {}".format(target_url))
 
         return dst
-
 
     def merge_dirs(self, src, dst, keep_separate=True, keep_parent_directory=False):
         """
@@ -57,7 +56,8 @@ class Utils:
                 try:
                     if keep_separate:
                         # Copy Require full path name, including the filename
-                        full_dst = os.path.join(dst, file_abs_path.split(os.sep)[-1]) # get the source filename and add it to dst path
+                        full_dst = os.path.join(dst, file_abs_path.split(os.sep)[
+                            -1])  # get the source filename and add it to dst path
                         self.logger.debug("Copying file: {} -> {}".format(file_abs_path, full_dst))
                         if keep_parent_directory:
                             shutil.copytree(file_abs_path, full_dst)

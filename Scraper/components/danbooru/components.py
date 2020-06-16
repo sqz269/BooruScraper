@@ -1,10 +1,11 @@
-from Scraper.framework.i_components import IComponents
-from Scraper.framework.base_component import MatchMode, BaseComponent
 from typing import Tuple, List
 
+import requests
 from bs4 import BeautifulSoup
 from bs4.element import Tag
-import requests
+
+from Scraper.framework.base_component import MatchMode, BaseComponent
+from Scraper.framework.i_components import IComponents
 
 
 class ComponentsDanbooru(BaseComponent, IComponents):
@@ -39,28 +40,29 @@ class ComponentsDanbooru(BaseComponent, IComponents):
     IMAGE_DATA_FIELD_TO_CONFIGURATION = {
         # WARNING: EXPERIMENTAL
         # Config name           : img_data[key]   value type  Compairson mode
-        "tags_extra":           ["image_tags",        list, MatchMode.INCLUDE, " "],
-        "tags_exclude_extra":   ["image_tags",        list, MatchMode.EXCLUDE, " "],
+        "tags_extra": ["image_tags", list, MatchMode.INCLUDE, " "],
+        "tags_exclude_extra": ["image_tags", list, MatchMode.EXCLUDE, " "],
 
         # "rating"                : ["image_rating",      int,  MATCH_MODE.VARY],
-        "children":             ["image_has_children",bool, MatchMode.EQUAL],
+        "children": ["image_has_children", bool, MatchMode.EQUAL],
 
-        "extension":            ["image_extension",   list, MatchMode.SUPER_INCLUDE, " "],
-        "extension_exclude":    ["image_extension",   list, MatchMode.SUPER_EXCLUDE, " "],
+        "extension": ["image_extension", list, MatchMode.SUPER_INCLUDE, " "],
+        "extension_exclude": ["image_extension", list, MatchMode.SUPER_EXCLUDE, " "],
 
-        "max_width":            ["image_width",       int, MatchMode.GREATER],
-        "min_width":            ["image_width",       int, MatchMode.SMALLER],
-        "max_height":           ["image_height",      int, MatchMode.GREATER],
-        "min_height":           ["image_height",      int, MatchMode.SMALLER],
+        "max_width": ["image_width", int, MatchMode.GREATER],
+        "min_width": ["image_width", int, MatchMode.SMALLER],
+        "max_height": ["image_height", int, MatchMode.GREATER],
+        "min_height": ["image_height", int, MatchMode.SMALLER],
 
-        "min_fav_count":        ["image_fav_count",   int, MatchMode.SMALLER],  # image_fav_count smaller than min_fav_count?
-        "min_score":            ["image_score",       int, MatchMode.SMALLER],
+        "min_fav_count": ["image_fav_count", int, MatchMode.SMALLER],  # image_fav_count smaller than min_fav_count?
+        "min_score": ["image_score", int, MatchMode.SMALLER],
 
-        "source_origin":        ["image_source",      list, MatchMode.SUPER_INCLUDE, " "],
-        "source_origin_exclude":["image_source",      list, MatchMode.SUPER_EXCLUDE, " "]
+        "source_origin": ["image_source", list, MatchMode.SUPER_INCLUDE, " "],
+        "source_origin_exclude": ["image_source", list, MatchMode.SUPER_EXCLUDE, " "]
     }
 
-    def __init__(self, config_path: str = None, config_dict: dict = None, load_config_from_abs_path=False, init_verbose=False):
+    def __init__(self, config_path: str = None, config_dict: dict = None, load_config_from_abs_path=False,
+                 init_verbose=False):
         # See _base_component->BaseComponent's constructor for argument details
         if config_path or config_dict:
             super(ComponentsDanbooru, self).__init__(config_path, config_dict, load_config_from_abs_path, init_verbose)
@@ -112,13 +114,15 @@ class ComponentsDanbooru(BaseComponent, IComponents):
             img_data = {}
             for k, v in self.IMAGE_DATA_FIELD_TO_HTML_DATA_FIELD.items():
                 img_data.update({k: post.get(f"data-{v}")})
-            img_data.update({"image_links": [post.get("data-file-url")]})  # image links need to be a list so it can't be automatically updated
+            img_data.update({"image_links": [
+                post.get("data-file-url")]})  # image links need to be a list so it can't be automatically updated
             img_data.update({"image_parent_link": self.base_submission_url.format(id=img_data["image_id"])})
             image_data_all.append(img_data)
         return image_data_all
 
     def are_requirements_satisfied(self, data: dict) -> bool:
-        unsatisfied_fields = self.automated_requirements_verification(self.IMAGE_DATA_FIELD_TO_CONFIGURATION, data, False)
+        unsatisfied_fields = self.automated_requirements_verification(self.IMAGE_DATA_FIELD_TO_CONFIGURATION, data,
+                                                                      False)
         if unsatisfied_fields:
             self.logger.debug(f"Requirements were not satisfied due to fields: {unsatisfied_fields}")
             return False

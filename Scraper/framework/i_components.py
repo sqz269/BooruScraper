@@ -4,6 +4,7 @@ from typing import List, Tuple
 class IComponents:
     """All methods in this class should be overridden by it's child
     """
+
     def generate_urls(self) -> List[Tuple[str, str]]:
         self.logger.fatal("Function: \"generate_urls(self)\" was not overridden")
         raise NotImplementedError("Function \"generate_urls()\" was not overridden")

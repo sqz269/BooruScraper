@@ -52,7 +52,7 @@ class Ui_StatusWindow(object):
         self.status_warnings_l.setFont(font)
         self.status_warnings_l.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.status_warnings_l.setStyleSheet("color: orange")
-        self.status_warnings_l.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.status_warnings_l.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.status_warnings_l.setObjectName("status_warnings_l")
         self.gridLayout.addWidget(self.status_warnings_l, 0, 2, 1, 1)
         self.status_errors_l = QtWidgets.QLabel(self.log_event_overview)
@@ -61,7 +61,7 @@ class Ui_StatusWindow(object):
         self.status_errors_l.setFont(font)
         self.status_errors_l.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.status_errors_l.setStyleSheet("color: red")
-        self.status_errors_l.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.status_errors_l.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.status_errors_l.setObjectName("status_errors_l")
         self.gridLayout.addWidget(self.status_errors_l, 0, 0, 1, 1)
         self.status_warnings = QtWidgets.QLabel(self.log_event_overview)
@@ -77,7 +77,7 @@ class Ui_StatusWindow(object):
         self.status_infos_l.setFont(font)
         self.status_infos_l.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.status_infos_l.setStyleSheet("color: blue")
-        self.status_infos_l.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.status_infos_l.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.status_infos_l.setObjectName("status_infos_l")
         self.gridLayout.addWidget(self.status_infos_l, 0, 4, 1, 1)
         self.status_errors = QtWidgets.QLabel(self.log_event_overview)
@@ -91,7 +91,7 @@ class Ui_StatusWindow(object):
         font = QtGui.QFont()
         font.setPointSize(7)
         self.status_tip_debug_msg.setFont(font)
-        self.status_tip_debug_msg.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.status_tip_debug_msg.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.status_tip_debug_msg.setObjectName("status_tip_debug_msg")
         self.gridLayout.addWidget(self.status_tip_debug_msg, 2, 0, 1, 6)
         self.status_infos = QtWidgets.QLabel(self.log_event_overview)
@@ -163,11 +163,12 @@ class Ui_StatusWindow(object):
         StatusWindow.setWindowTitle(_translate("StatusWindow", "Scraper Status"))
         self.log_group.setTitle(_translate("StatusWindow", "Logger"))
         self.log_message_window.setTitle(_translate("StatusWindow", "Log Messages"))
-        self.log_window.setHtml(_translate("StatusWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
+        self.log_window.setHtml(_translate("StatusWindow",
+                                           "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+                                           "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+                                           "p, li { white-space: pre-wrap; }\n"
+                                           "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+                                           "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
         self.log_event_overview.setTitle(_translate("StatusWindow", "Event Overview"))
         self.status_warnings_l.setText(_translate("StatusWindow", "Warnings:"))
         self.status_errors_l.setText(_translate("StatusWindow", "Errors:"))
