@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BasicConfigurationWindow</class>
+ <widget class="QMainWindow" name="BasicConfigurationWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>550</width>
+    <height>432</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Basic Configuration</string>
+  </property>
+  <widget class="QWidget" name="basic_central">
+   <layout class="QGridLayout" name="gridLayout_8">
+    <item row="1" column="2">
+     <widget class="QGroupBox" name="basic_config_group_operation_status">
+      <property name="title">
+       <string>Operation And Status</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_10">
+       <item row="1" column="0">
+        <widget class="QLabel" name="basic_scraper_status_l">
+         <property name="text">
+          <string>Current Status</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <widget class="QPushButton" name="basic_operation_start">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Start</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="basic_scraper_status">
+         <property name="whatsThis">
+          <string/>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color: red</string>
+         </property>
+         <property name="text">
+          <string>STOPPED</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="2">
+        <widget class="QPushButton" name="basic_view_status_detail">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>View Details</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QGroupBox" name="basic_config_group_advanced">
+      <property name="title">
+       <string>ADVANCED</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="1" column="0">
+        <widget class="QLabel" name="basic_download_delay_l">
+         <property name="text">
+          <string>Download Delay (sec)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="basic_user_agent_l">
+         <property name="text">
+          <string>Request User Agent</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QSpinBox" name="basic_max_concurrent_thread">
+         <property name="maximum">
+          <number>10</number>
+         </property>
+         <property name="value">
+          <number>2</number>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="basic_collect_data_only_l">
+         <property name="text">
+          <string>Collect Data Only</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QCheckBox" name="basic_collect_data_only">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="basic_start_delay_l">
+         <property name="text">
+          <string>Start Delay (sec)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="basic_max_concurrent_thread_l">
+         <property name="text">
+          <string>Max Concurrent Thread</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="basic_read_image_info_delay_l">
+         <property name="text">
+          <string>Read Image Info Delay (sec)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLineEdit" name="basic_user_agent">
+         <property name="text">
+          <string>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4018.0 Safari/537.36</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="basic_flush_csv_imminently_l">
+         <property name="text">
+          <string>Flush CSV Imminently</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QCheckBox" name="basic_flush_csv_imminently">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QDoubleSpinBox" name="basic_download_delay">
+         <property name="decimals">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <double>1.400000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QDoubleSpinBox" name="basic_read_image_info_delay">
+         <property name="decimals">
+          <number>1</number>
+         </property>
+         <property name="minimum">
+          <double>0.500000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QDoubleSpinBox" name="basic_start_delay">
+         <property name="decimals">
+          <number>1</number>
+         </property>
+         <property name="minimum">
+          <double>1.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QGroupBox" name="basic_config_group_output">
+      <property name="title">
+       <string>OUTPUT</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_6">
+       <item row="3" column="1" colspan="2">
+        <widget class="QLineEdit" name="basic_csv_entry_string">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="placeholderText">
+          <string>See help for more info</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="basic_merge_files_l">
+         <property name="text">
+          <string>Merge Files (After Completion)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="basic_output_folder"/>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="basic_output_folder_l">
+         <property name="text">
+          <string>Output Folder</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1" colspan="2">
+        <widget class="QCheckBox" name="basic_merge_files">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="basic_file_name_string_l">
+         <property name="text">
+          <string>File Name String</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1" colspan="2">
+        <widget class="QLineEdit" name="basic_master_directory_string">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="placeholderText">
+          <string>See help for more info</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="basic_merge_files_keep_copy_l">
+         <property name="text">
+          <string>Merge Files Keep Copy</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="basic_master_directory_string_l">
+         <property name="text">
+          <string>Master Directory String</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1" colspan="2">
+        <widget class="QCheckBox" name="basic_merge_files_keep_copy">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1" colspan="2">
+        <widget class="QLineEdit" name="basic_file_name_string">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="placeholderText">
+          <string>See help for more info</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="basic_csv_entry_string_l">
+         <property name="text">
+          <string>CSV Entry String</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="basic_output_folder_browse">
+         <property name="text">
+          <string>Browse Dir</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>550</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="basic_action_load_config"/>
+    <addaction name="basic_action_save_config"/>
+   </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionHelp"/>
+    <addaction name="separator"/>
+    <addaction name="actionAbout"/>
+   </widget>
+   <addaction name="menuHelp"/>
+   <addaction name="menuAbout"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionDanbooru">
+   <property name="text">
+    <string>Danbooru</string>
+   </property>
+  </action>
+  <action name="actionGelbooru">
+   <property name="text">
+    <string>Gelbooru</string>
+   </property>
+  </action>
+  <action name="actionPixiv">
+   <property name="text">
+    <string>Pixiv</string>
+   </property>
+  </action>
+  <action name="actionbasic_Fast">
+   <property name="text">
+    <string>Pixiv Fast</string>
+   </property>
+  </action>
+  <action name="basic_action_load_config">
+   <property name="text">
+    <string>Load Configuration</string>
+   </property>
+  </action>
+  <action name="basic_action_save_config">
+   <property name="text">
+    <string>Save Configuration</string>
+   </property>
+  </action>
+  <action name="actionHelp">
+   <property name="text">
+    <string>Configuration Explained</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

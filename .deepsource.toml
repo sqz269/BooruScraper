@@ -1,5 +1,9 @@
 version = 1
 
+exclude_patterns = [
+  "UserInterface/Ui_Scripts/**"
+]
+
 [[analyzers]]
 name = "python"
 enabled = true
