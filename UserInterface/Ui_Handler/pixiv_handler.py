@@ -13,29 +13,55 @@ from UserInterface.libs.log_window_update_helper import ScraperEvent
 from UserInterface.libs.ui_config_assist import UI_TYPE, UiConfigurationHelper
 
 
+# We inherit from the Ui class pyqt has generated from us from the Ui file so we can initialize it in this class
+# We also "Implements" IConfigWindowHandler as it provides some functions that is common between configuration windows
 class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindowHandler):
 
     def __init__(self):
+        # Calls Ui_PixivConfigurationWindow's constructor, it's useless because it does not have a constructor
         super().__init__()
+
+        # We create an new QMainWindow instance to instantiate/setup the Pixiv's ui onto
         self._window = QtWidgets.QMainWindow()
+        # Instantiate window elements to the new MainWindow instance we just created
         self.setupUi(self._window)
 
+        # Instantiate a new StatusWindowHandler with the window title Pixiv Status
         self.status_window: StatusWindowHandler = StatusWindowHandler("Pixiv Status")
 
+        # Bind some buttons to functions so they are useful
         self.bind_elements()
 
+        # this variable stores data that is going to help us to
+        # dump/load the configuration with the UI by linking
+        # all the configuration names with a variable that points
+        # to the element that stores value for that config
         self.UI_CONFIG_NAME_TO_NORMAL_NAME = None
+
+        # This variable helps to load/dump dropdown items such
+        # when the original config value might not be the dropdown display value
+        # for example: with original config value: "l_day" the dropdown value might be "With in last day"
+        # by linking original config values to a specific dropdown item's index
         self.COMBO_BOX_SETTING_NAME_TO_INDEX = None
+
+        # Assigning all the fields and names would be very ugly with in the __init__ method so
+        # we assign the UI_CONFIG_NAME_TO_NORMAL_NAME and COMBO_BOX_SETTING_NAME_TO_INDEX in this method
         self.init_config_vars()
 
+        # Last config path the user has loaded
         self.config_file_path = None
 
+        # The active thread that handles scraping
+        # Was going to use this so we can terminate the current operation
+        # but unfortunately due to the difficulty and the nature of threads
+        # the terminate feature has been dropped, so it's safe to remove this variable
         self._active_scraper_thread: Thread = None
 
     def init_config_vars(self):
 
         self.UI_CONFIG_NAME_TO_NORMAL_NAME = [
             #   Original name,              Variable name,                  Type
+            #  ["TAGS_QUERY",               self.pixiv_query_tags,          UI_TYPE.TEXT_INPUT],
             ["TAGS_QUERY", self.pixiv_query_tags, UI_TYPE.TEXT_INPUT],
             ["TAGS_EXCLUDE_QUERY", self.pixiv_query_tags_exclude, UI_TYPE.TEXT_INPUT],
             ["SEARCH_MODE", self.pixiv_search_mode, UI_TYPE.DROPDOWN],
@@ -87,6 +113,9 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
             ["MERGE_FILE_KEEP_SEPARATE", self.pixiv_merge_files_keep_copy, UI_TYPE.CHECK_BOX],
 
             # not implemented in UI, because im LAZY
+            # This is for when something that could be useful but not really used
+            # and you are too lazy to make an element for it, you can set it with a default value
+            # using UI_TYPE.VALUE and just leave the element variable empty
             ["TOOL", "", UI_TYPE.VALUE],
             ["TAGS_BYPASS", "", UI_TYPE.VALUE],
             ["NON_QUERY_TAG_MATCH_MODE", "absolute", UI_TYPE.VALUE],
@@ -106,6 +135,7 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
         ]
 
         self.COMBO_BOX_SETTING_NAME_TO_INDEX = {
+            # s_tag_full which is our first combo box item with text: Tags: Exact Match"
             "SEARCH_MODE": {"s_tag_full": 0,
                             "s_tag": 1,
                             "s_tc": 2},
@@ -130,6 +160,9 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
         }
 
     def bind_elements(self):
+        # browse_file_fmt is a function that helps us to create an file dialogue and automatically
+        # assign the value of the file dialogue to our UI element using the file string format
+        # which looks like: "file<{encoding}><{separator}>: {path}"
         self.pixiv_query_tags_browse.clicked.connect(
             lambda: UiConfigurationHelper.browse_file_fmt(self.pixiv_query_tags))
 
@@ -139,6 +172,8 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
         self.pixiv_user_exclude_browse.clicked.connect(
             lambda: UiConfigurationHelper.browse_file_fmt(self.pixiv_user_exclude))
 
+        # basically same utility as browse_file_fmt, but browse_dir will only
+        # assign the absolute path of the choose dir to the element
         self.pixiv_output_folder_browse.clicked.connect(
             lambda: UiConfigurationHelper.browse_dir(self.pixiv_output_folder))
 
@@ -149,6 +184,9 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
         self.pixiv_action_load_config.triggered.connect(self.load_config)
         self.pixiv_action_save_config.triggered.connect(self.save_config)
 
+        # This bind is for when scraper is hit a different stage of the scraper operation
+        # and so it changes the text of current status, detailed implementation can be found
+        # in UserInterface/libs/custom_logger.py in function "info"
         self.status_window.ui_helper.scrape_event.connect(
             lambda event_name:
             self.status_window.update_overall_status(event_name, self.pixiv_scraper_status))
@@ -168,13 +206,14 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
         self._window.show()
 
     def load_config(self, config_dir=None):
-        ini_path = UiConfigurationHelper.browse_file()
+        ini_path = UiConfigurationHelper.browse_file()  # get the file path the user wanna load
 
         if not ini_path:
             return
 
-        cfg_dict = UiConfigurationHelper.parse_ini_config(ini_path)
+        cfg_dict = UiConfigurationHelper.parse_ini_config(ini_path)  # parse the ini into dict with {CONFIG KEY: VALUE}
 
+        # a function that assist with the config loading
         UiConfigurationHelper.load_config(cfg_dict, self.UI_CONFIG_NAME_TO_NORMAL_NAME,
                                           self.COMBO_BOX_SETTING_NAME_TO_INDEX)
 
