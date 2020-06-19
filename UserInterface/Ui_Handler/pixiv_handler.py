@@ -248,7 +248,6 @@ class PixivConfigurationWindowHandler(Ui_PixivConfigurationWindow, IConfigWindow
         scraper_inst.entry_point(scraper_inst)
 
     def start_scrape(self):
-        # Subprocess may be required
         pixiv_scraper = init_scraper_base(ComponentPixiv, config_dict=self.dump_config(), init_verbose=False)
         pixiv_scraper.logger = UiLogger("Pixiv", self.status_window)  # Replace logger, see custom_logger.py for more
 

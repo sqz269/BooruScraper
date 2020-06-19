@@ -1,4 +1,5 @@
 import configparser
+from datetime import datetime
 
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox
@@ -7,6 +8,10 @@ from Scraper.libs.cfgBuilder import ConfigurationBuilder
 
 
 class UI_TYPE:
+    """
+    The UI Type of the variable
+    used used in list that link config name to fields
+    """
     TEXT_INPUT = 0
     DROPDOWN = 1
     SPIN_BOX = 2
@@ -20,6 +25,18 @@ class UiConfigurationHelper:
 
     @staticmethod
     def dump_config(ui_name_to_normal_name: list, combo_box_config_to_index: dict, key_to_lower=True) -> dict:
+        """
+        Dump values from UI fields to
+
+        Args:
+            ui_name_to_normal_name: the list that links config name and UI elements.
+                                    see UI_CONFIG_NAME_TO_NORMAL_NAME in pixiv_handler for example
+            combo_box_config_to_index: the list that links actual config values to combo box indexes
+                                    see COMBO_BOX_SETTING_NAME_TO_INDEX in pixiv_handler for example
+            key_to_lower: if you want to convert the keys in UI_CONFIG_NAME_TO_NORMAL_NAME to lower case {default: True}
+
+        Returns: a dictionary that is formatted like {<config name>: <config value>}
+        """
         data = {}
         for e in ui_name_to_normal_name:
             element_type = e[2]
@@ -66,6 +83,20 @@ class UiConfigurationHelper:
 
     @staticmethod
     def load_config(source_config: dict, ui_name_to_normal_name: list, combox_cfg_name_to_index: dict) -> None:
+        """
+        Load an dictionary of configuration's value to the UI's element
+
+        Args:
+            source_config: the config that contains pre-existing configuration you want to load.
+                            It assumes all keys in the dictionary are lower cases
+            ui_name_to_normal_name: the list that links config name and UI elements.
+                                    see UI_CONFIG_NAME_TO_NORMAL_NAME in pixiv_handler for example
+            combox_cfg_name_to_index: the list that links actual config values to combo box indexes
+                                    see COMBO_BOX_SETTING_NAME_TO_INDEX in pixiv_handler for example
+
+        Returns:
+
+        """
         for e in ui_name_to_normal_name:
             element_type = e[2]
             if element_type == UI_TYPE.TEXT_INPUT:
@@ -89,7 +120,8 @@ class UiConfigurationHelper:
                 e[1].setCurrentIndex(config_name_2_index[source_value])
 
             if element_type == UI_TYPE.DATE_INPUT:
-                continue
+                date = datetime.fromisoformat(source_config[e[0].lower()])
+                e[1].setDate(date)
 
             # TODO: Edit the list directly, but warning maybe required
             if element_type == UI_TYPE.VALUE:  # Don't have a ui element for it
@@ -97,17 +129,32 @@ class UiConfigurationHelper:
 
     @staticmethod
     def save_config(config_dict: dict, config_path: str):
+        """
+        Writes an dictionary with config to an ini file
+
+        Args:
+            config_dict: The dictionary that contains data about configuration we are going to save
+            config_path: The path we are saving the configuration to, must be an absolute path including file names
+
+        Returns:
+            {Void}
+        """
         cfg_parser = configparser.ConfigParser()
         cfg_parser["SCRAPER_CONFIGURATION"] = config_dict
         with open(config_path, "w", encoding="utf-8") as file:
             cfg_parser.write(file)
 
     @staticmethod
-    def set_combo_box_item(combo_box, original_name, readable_name_to_org_name):
-        pass
-
-    @staticmethod
     def browse_dir(change_var=None) -> str:
+        """
+        Pops up a file dialogue and ask user to browse for a folder
+
+        Args:
+            change_var: QLineEdit. set the value of this element to selected folder
+
+        Returns:
+            The path user browsed (could be empty)
+        """
         dst = QtWidgets.QFileDialog.getExistingDirectory()
         if change_var:
             change_var.setText(dst)
@@ -115,6 +162,16 @@ class UiConfigurationHelper:
 
     @staticmethod
     def browse_file_fmt(change_var) -> str:
+        """
+        Pops up a file dialogue and ask user to browse for a file
+        And format the path browsed to "file<{encoding}><{separator}>: {path}" string
+
+        Args:
+            change_var: set the path value to this element. must be a QLineEdit Type
+
+        Returns:
+            the formatted string
+        """
         dst = QtWidgets.QFileDialog.getOpenFileName()[0]
         file_string = "file<{encoding}><{separator}>: {path}"
         fs = file_string.format(encoding="utf-8", separator=",", path=dst)
@@ -123,6 +180,15 @@ class UiConfigurationHelper:
 
     @staticmethod
     def browse_file(change_var=None) -> str:
+        """
+        Pops up a file dialogue and ask user to browse for a file WITHOUT formatting it to a string
+
+        Args:
+            change_var: set the path value to this element. must be a QLineEdit Type
+
+        Returns:
+            path user selected
+        """
         dst = QtWidgets.QFileDialog.getOpenFileName()[0]
         if change_var:
             change_var.setText(dst)
@@ -130,6 +196,16 @@ class UiConfigurationHelper:
 
     @staticmethod
     def parse_ini_config(cfg) -> dict:
+        """
+        Parses an INI file into a dictionary {config name: config value}
+
+        Args:
+            cfg: the path of the INI file
+
+        Returns:
+            the dictionary with the config name as the key and config value as the value
+            Returns empty dict if the config is failed to be read
+        """
         parser = configparser.ConfigParser()
         if not parser.read(cfg, encoding="utf-8"): return {}
         cfg = {}
