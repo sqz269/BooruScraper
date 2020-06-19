@@ -20,7 +20,7 @@ Some field it **must** contain:
 
 ---
 
-### _base_component.py and BaseComponent class
+### base_component.py and BaseComponent class
 #### Accessing Configurations
 configurations can be accessed via `self.config` all the config are lowercase from the original key in the file; for example configuration with name `TAGS` in ini file can be access via `self.config['tags']`
 
@@ -32,10 +32,10 @@ Loggers can be access via `self.logger`
 
 ---
 
-### _component.py
-#### Your own class should be using import & inherit: `ComponentBasic`, which can be imported via: `from Scraper.framework._components_basic import ComponentBasic`
+### i_components.py
+#### Your own class should be using import & inherit (Implement): `IComponents`, which can be imported via: `from Scraper.framework.i_components.py import IComponents`
 
-#### 3 Functions must be changed `generate_urls`, `process_page`,  `are_requirements_satisfied`
+#### 3 Functions must be implemented `generate_urls`, `process_page`,  `are_requirements_satisfied`
 
 #### Function: `generate_urls`
 Arguments: None
@@ -73,9 +73,13 @@ Create a configuration directory that is on or below the directory level of main
 and then with in the configuration directory create a file name: `.config_directory` to mark the directory so the program knows.
 Then simply call `super.__init__(<ConfigFileName>)` to load the configuration
 
+### Loading Configuration Directly From A Existing Dictionary (Used for UI Implementations)
+Pass the dictionary to the keyword argument `config_dict` in `init_scraper_base`
+
 #### List of Required fields
 ##### The keys in the ini file must be exact match in-order to work
 ##### An .ini file with pre-existing fields available at docs directory
+- REVERSE_GENERATED_URL {bool} --
 - SAVE_PATH {string(path-like)} --
 - FILENAME_STRING {string(formatted)} --
 - CSV_ENTRY_STRING {string(formatted)} --
