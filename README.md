@@ -32,6 +32,12 @@ If you launched command prompt using **normal user** use this command:  `pip ins
 1. Run main_graphical.py to access the GUI for scrapers
 2. Access the configuration screen by clicking on **Show Configuration**
 3. Edit the configuration or load existing ones using File/Load(Save) Configuration in the tool bar
+### GUI Example
+Module Selection           |  Module Configuration (Pixiv)
+---------------------------|-------------------------
+![ModuleSelections](ReadmeImages/module_select.png)|![ModulePixiv](ReadmeImages/pixiv_module.png)
+
+
 
 ## Framework Documentation
 See Docs/FrameworkUsage.md for framework documentation
