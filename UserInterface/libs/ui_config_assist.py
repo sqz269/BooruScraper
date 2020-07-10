@@ -120,8 +120,11 @@ class UiConfigurationHelper:
                 e[1].setCurrentIndex(config_name_2_index[source_value])
 
             if element_type == UI_TYPE.DATE_INPUT:
-                date = datetime.fromisoformat(source_config[e[0].lower()])
-                e[1].setDate(date)
+                try:
+                    date = datetime.fromisoformat(source_config[e[0].lower()])
+                    e[1].setDate(date)
+                except ValueError:  # If the source_config's string is not an ISO format time
+                    pass
 
             # TODO: Edit the list directly, but warning maybe required
             if element_type == UI_TYPE.VALUE:  # Don't have a ui element for it
