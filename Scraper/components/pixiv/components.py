@@ -184,7 +184,7 @@ class ComponentPixiv(BaseComponent, IComponents):
         # do some math calculation
         image_data.update({"image_avg_bookmark_perday":
                                self._calculate_avg_bookmark_per_day(image_data["image_date"],
-                                                                    image_data["image_bookmarks"])})
+                                                                    image_data["image_bookmarks"])[0]}) # calc_avg_bookmark return a tuple (avg_bookmark_perday, days_passed)
 
         if image_data["image_bookmarks"] != 0:  # prevent 0 division error
             image_data.update({"image_view_bookmark_ratio":
