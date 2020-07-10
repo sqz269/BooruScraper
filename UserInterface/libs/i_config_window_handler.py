@@ -1,4 +1,16 @@
+from PyQt5.QtWidgets import QMessageBox
+
+from UserInterface.libs.ui_config_assist import UiConfigurationHelper
+
+
 class IConfigWindowHandler:
+
+    def __init__(self):
+        self.UI_CONFIG_NAME_TO_NORMAL_NAME = None
+        self.COMBO_BOX_SETTING_NAME_TO_INDEX = None
+
+    def init_config_vars(self):
+        raise NotImplementedError("init_config_var is not implemented, please implement it")
 
     def show_status_window(self):
         raise NotImplementedError("show_status_window is not implemented, please implement it")
@@ -14,14 +26,21 @@ class IConfigWindowHandler:
         Returns:
             dict: dictionary of configuration
         """
-        raise NotImplementedError("dump_config is not implemented, please implement it")
+        return UiConfigurationHelper.dump_config(self.UI_CONFIG_NAME_TO_NORMAL_NAME,
+                                                 self.COMBO_BOX_SETTING_NAME_TO_INDEX,
+                                                 key_to_lower=True)
 
-    def load_config(self):
+    def load_config(self, cfg_path: str):
         """Parse and load an pre-existing ini file to UI fields
         """
-        raise NotImplementedError("load_config is not implemented, please implement it")
+        cfg_dict = UiConfigurationHelper.parse_ini_config(cfg_path)
 
-    def save_config(self):
+        UiConfigurationHelper.load_config(cfg_dict,
+                                          self.UI_CONFIG_NAME_TO_NORMAL_NAME,
+                                          self.COMBO_BOX_SETTING_NAME_TO_INDEX)
+
+    def save_config(self, cfg_path: str, cfg_dict: dict):
         """Parse and write the data in the UI fields to an ini file
         """
-        raise NotImplementedError("save_config is not implemented, please implement it")
+        UiConfigurationHelper.save_config(cfg_dict, cfg_path)
+        QMessageBox.information(None, "Success", f"Successfully exported current configuration to:\n{cfg_path}")
