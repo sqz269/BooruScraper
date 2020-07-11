@@ -235,8 +235,7 @@ class ComponentPixiv(BaseComponent, IComponents):
     def _calculate_avg_bookmark_per_day(created_date: str, total_bookmark: int):
         current_JST_time = time.time()  # possibility of timezone offsets
         upload_time = time_parse(created_date).timestamp()  # parse the ISO-8601 Formmatted string to Unix Epoch
-        days_passed = (
-                                  current_JST_time - upload_time) / 86400  # divide the difference between current time and upload time by a day
+        days_passed = (current_JST_time - upload_time) / 86400  # Convert seconds to days
         bookmark_per_day = total_bookmark / days_passed
         return (bookmark_per_day, days_passed)
 
