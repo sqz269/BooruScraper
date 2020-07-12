@@ -132,8 +132,8 @@ def init_scraper_base(SuperClass: IComponents, *args, **kwargs):
             return self.download(img_url, file_path, header, self.request_cookie)
 
         def write_csv_entry(self, data: dict):
-            self.csv_io.write(self.config["csv_entry_string"].format(**data).encode("utf-8"))
-            self.csv_io.write("\n".encode("utf-8"))
+            self.csv_io.write(self.config["csv_entry_string"].format(**data))
+            self.csv_io.write("\n")
             if self.config["flush_csv_imminently"]:
                 self.csv_io.flush()
                 os.fsync(self.csv_io.fileno())
@@ -149,14 +149,14 @@ def init_scraper_base(SuperClass: IComponents, *args, **kwargs):
             self.logger.info(f"Created master directory at: {self.master_directory}")
 
             csv_path = os.path.abspath(os.path.join(self.master_directory, "data.csv"))
-            self.csv_io = open(csv_path, "wb")
+            self.csv_io = open(csv_path, "w", encoding="utf-8")
 
             self.logger.info(f"Created CSV file for collected image at: {csv_path}")
 
             # Write the headers of the CSV
             csv_header = self.config["csv_entry_string"].replace("{", "").replace("}", "") + "\n"
             self.logger.debug("Writing CSV header")
-            self.csv_io.write(csv_header.encode("utf-8"))
+            self.csv_io.write(csv_header)
 
         def clean_up(self):
             self.csv_io.close()
