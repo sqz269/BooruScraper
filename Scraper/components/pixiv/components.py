@@ -197,7 +197,7 @@ class ComponentPixiv(BaseComponent, IComponents):
         # because the response only contains the direct link of the first image,
         # we have to make out rest of the image url
         base_url = data["urls"]["original"].replace("p0", "p{}")
-        image_urls = [base_url.format(i) for i in range(0, image_data["image_page_count"])]
+        image_urls = [base_url.format(i) for i in range(0, image_data["image_page_count"])]  # TODO: Should this field only contain one url?
         image_data.update({"image_links": image_urls})
         return image_data
 

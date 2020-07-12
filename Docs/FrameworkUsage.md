@@ -22,7 +22,7 @@ Some field it **must** contain:
 
 ### base_component.py and BaseComponent class
 #### Accessing Configurations
-configurations can be accessed via `self.config` all the config are lowercase from the original key in the file; for example configuration with name `TAGS` in ini file can be access via `self.config['tags']`
+configurations can be accessed via `self.config` all the config are lowered from the original key in the file; for example configuration with name `TAGS` in ini file can be access via `self.config['tags']`
 
 #### More on configurations
 to convert certain configuration into lists. simply call `self.config.cvt_str_list()` with the parameter of list of keys you want to convert
@@ -33,7 +33,7 @@ Loggers can be access via `self.logger`
 ---
 
 ### i_components.py
-#### Your own class should be using import & inherit (Implement): `IComponents`, which can be imported via: `from Scraper.framework.i_components.py import IComponents`
+#### Your own class should be using implement: `IComponents`, which can be imported using: `from Scraper.framework.i_components.py import IComponents`
 
 #### 3 Functions must be implemented `generate_urls`, `process_page`,  `are_requirements_satisfied`
 
