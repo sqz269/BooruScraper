@@ -91,7 +91,7 @@ def init_scraper_base(SuperClass: IComponents, *args, **kwargs):
                                 self.logger.debug(f"Using Submission specific directory at: {dl_path}")
                             self.logger.info(f"Downloading images from submission id: {img_data['image_id']}")
                             for index, img_url in enumerate(img_data["image_links"]):
-                                self.logger.debug(f"Downloading image: {img_data['image_id']}")
+                                time.sleep(self.config["download_delay"])
                                 self._download_image(img_url, img_data, dl_path, index)
 
                 self.logger.info(f"Processing completed for page: {page_number}")
