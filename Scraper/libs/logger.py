@@ -14,7 +14,7 @@ def init_logging(level_stdout=logging.INFO, level_IO=logging.WARNING, name="scrp
     server.setLevel(logging.DEBUG)
 
     file = f"{name}_ops.log"
-    file_handler = logging.FileHandler(file)
+    file_handler = logging.FileHandler(file, encoding="utf-8")
     file_handler.setLevel(level_IO)
 
     stream_handler = logging.StreamHandler()
