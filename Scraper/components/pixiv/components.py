@@ -32,6 +32,10 @@ IMAGE_DATA_FIELD_TO_JSON_DATA_FIELD = {
     "image_is_original": "isOriginal"
 }
 
+class PreverifyState:
+    FAILED = 0
+    BYPASSED = 1
+    PASSED = 2
 
 class ComponentPixiv(BaseComponent, IComponents):
     api_endpoint = ("""
@@ -74,12 +78,51 @@ class ComponentPixiv(BaseComponent, IComponents):
 
     def generate_urls(self):  # TODO: Make tags_exclude_query actually work
         f_tags = self.config["tags_query"] + self.config["tags_exclude_query"]
-        f_tags = url_quote(f_tags)
         base_url_formatted = self.api_endpoint.format(f_tags=f_tags, **self.config.get_configuration())
         base_url_with_pg_number = base_url_formatted + "&p={page}"
         list_of_urls = [(base_url_with_pg_number.format(page=i), i) for i in
                         range(self.config["start_page"], (self.config["end_page"] + 1))]
         return list_of_urls
+
+    def _fill_data_bypass(self, image_data: dict) -> dict:
+        link_org_template = "https://i.pximg.net/img-original/{data}"
+        if "custom-thumb" in image_data["url"]:
+            link_path = image_data["url"].split("custom-thumb/")[-1].replace("p0_custom1200", "{}")
+        elif "img-master" in image_data["url"]:
+            link_path = image_data["url"].split("img-master/")[-1].replace("p0_square1200", "{}")
+        else:
+            self.logger.warn("Bruh")
+            breakpoint()
+
+        link_path = link_path.replace(".jpg", ".png")
+        org_link_template = link_org_template.format(data=link_path)
+        links = [org_link_template.format(f"p{i}") for i in range(0, image_data["pageCount"])]
+
+        template = {
+            'image_id': image_data["id"], 
+            'image_title': image_data["title"], 
+            'image_type': image_data["illustType"], 
+            'image_date': image_data["createDate"], 
+            'image_uploader_id': image_data["userId"], 
+            'image_uploader_name': image_data["userName"], 
+            'image_width': image_data["width"], 
+            'image_height': image_data["height"], 
+            'image_page_count': image_data["pageCount"], 
+            'image_bookmarks': -1, 
+            'image_views': -1, 
+            'image_likes': -1, 
+            'image_comments': -1, 
+            'image_is_original': None,
+            'image_tags': "".join(image_data['tags']),
+            'image_parent_link': self.artwork_view_url.format(id=image_data["id"]),
+            'image_avg_bookmark_perday': -1,
+            'image_view_bookmark_ratio': -1,
+            'image_extension': image_data["url"].split(".")[-1],
+            'image_links': links,
+            'use_bypass': True
+        }
+        
+        return template
 
     def process_page(self, url: str):
         self.logger.debug(f"Processing url: {url}")
@@ -92,47 +135,54 @@ class ComponentPixiv(BaseComponent, IComponents):
         search_resp: list = api_resp["body"]["illustManga"]["data"]
 
         filtered_results = []
-
+        bypass_results = {}
         for result in search_resp:
-            if self.verify_requirements_basic(result):
+            req = self.verify_requirements_basic(result)
+            if req == PreverifyState.FAILED:
+                continue;
+            elif req == PreverifyState.PASSED:
                 filtered_results.append(result["id"])
+            else:
+                bypass_results.update({result['id']: result})
 
         image_data = []
+        for data in bypass_results.values():
+            image_data.append(self._fill_data_bypass(data))
+
         for result in filtered_results:
             self.logger.debug("Retriving extended data for image with id: {}".format(result))
             image_data.append(self.retrive_extended_data(result))
 
         return image_data
 
-    def verify_requirements_basic(self, data: dict) -> bool:  # requirements that is
-        if data["isAdContainer"]:
-            self.logger.debug("Filter out submission due to it is an AD container")
-            return False
+    def verify_requirements_basic(self, data: dict) -> PreverifyState:  # requirements that is
+        if data.get("isAdContainer", False):
+            return PreverifyState.FAILED
 
         if self.config["ignore_bookmarked"] and not data["isBookmarkable"]:
             self.logger.debug(
                 f"Filter out {data['id']} due to target is not bookmarkable, which probably because already bookmarked")
-            return False
+            return PreverifyState.FAILED
 
         # Check if user is not in our filtered list
         if data["userId"] in self.config["user_include"]:
             self.logger.debug(f"Accepted {data['id']} due to submitted by a user in user_include")
-            return True
+            return PreverifyState.BYPASSED
         if data["userId"] in self.config["user_exclude"]:
             self.logger.debug(f"Filter out {data['id']} due to submitted by a user in user_exclude")
-            return False
+            return PreverifyState.FAILED
 
         for include_kw in self.config["title_include"]:
             if include_kw not in data["title"]:
                 self.logger.debug(
                     f"Filter out {data['id']} due to include keyword in title is not present. Keyword: {include_kw}")
-                return False
+                return  PreverifyState.FAILED
 
         for exclude_kw in self.config["title_exclude"]:
             if exclude_kw in data["title"]:
                 self.logger.debug(
                     f"Filter out {data['id']} due to exclude keyword in title is present. Keyword: {exclude_kw}")
-                return False
+                return PreverifyState.FAILED
 
         comp_operator = operator.eq if self.config["non_query_tag_match_mode"] == "absolute" else operator.contains
 
@@ -140,24 +190,25 @@ class ComponentPixiv(BaseComponent, IComponents):
             for excluded in self.config["tags_exclude"]:
                 if comp_operator(excluded, tag):
                     self.logger.debug(f"Filter out {data['id']} due to exclude tag is present. Tag: {excluded}")
-                    return False
+                    return PreverifyState.FAILED
 
             for bypass in self.config["tags_bypass"]:
                 self.logger.debug(f"Accept {data['id']} due to bypass tag is present. Tag: {bypass}")
-                if comp_operator(bypass, tag): return True
+                if comp_operator(bypass, tag):
+                    return PreverifyState.BYPASSED
 
         for exclude_kw in self.config["description_exclude"]:
             if exclude_kw in data["description"]:
                 self.logger.debug(
                     f"Filter out {data['id']} due to exclude keyword in description is present. Keyword: {exclude_kw}")
-                return False
+                return PreverifyState.FAILED
 
         if (self.config["page_count_min"] > data["pageCount"] and self.config["page_count_min"] > 0) or \
                 (data["pageCount"] > self.config["page_count_max"] > 0):
             self.logger.debug(f"Filter out {data['id']} due to excluded min max page number")
-            return False
+            return PreverifyState.FAILED
 
-        return True
+        return PreverifyState.PASSED
 
     def retrive_extended_data(self, img_id: str):  # bypass rate limiting (hopefully will work)
         r = requests.get(self.artwork_view_url.format(id=img_id))
@@ -199,9 +250,14 @@ class ComponentPixiv(BaseComponent, IComponents):
         base_url = data["urls"]["original"].replace("p0", "p{}")
         image_urls = [base_url.format(i) for i in range(0, image_data["image_page_count"])]  # TODO: Should this field only contain one url?
         image_data.update({"image_links": image_urls})
+        image_data.update({"use_bypass": False})
         return image_data
 
     def are_requirements_satisfied(self, data: dict):
+        if data["use_bypass"]:
+            self.logger.debug(f"Accpted {data['image_id']} due to use_bypass")
+            return True
+
         avg_booksmarks, days_passed = self._calculate_avg_bookmark_per_day(data["image_date"], data["image_bookmarks"])
         if not (avg_booksmarks >= self.math_eval(self.config["avg_bookmark_per_day"], local_var={"t": days_passed})):
             self.logger.debug(
